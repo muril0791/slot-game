@@ -1,0 +1,54 @@
+.slotMachine {
+  display: flex;
+  justify-content: center;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #000;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(to bottom, #333, #222);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  background: linear-gradient(180deg, #444, #222);
+  border: 3px solid #ddd;
+  border-radius: 15px;
+  margin: 0 15px;
+  padding: 15px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+
+.symbol {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  margin: 1px;
+  font-size: 48px;
+  color: #ffd700;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.symbol:hover {
+  transform: scale(1.1);
+}
+
+@keyframes spin-symbol {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-300%); }
+}
+
+.spin .symbol {
+  animation: spin-symbol 0.5s infinite linear;
+}
+
+
+/* Estilos responsivos e adicionais conforme necessário */

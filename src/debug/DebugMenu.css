@@ -1,23 +1,69 @@
 .debug-menu {
   position: fixed;
-  left: 0;
   top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
   background: #333;
-  padding: 10px;
-  border-radius: 0 10px 10px 0;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box; /* Inclui padding no cálculo da largura/altura */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.debug-options button {
-  margin: 5px 0;
-  background-color: #007bff;
+.debug-menu.open {
+  transform: translateX(0);
+}
+
+.debug-menu-content {
+  overflow-y: auto; /* Remove isso se não quiser nenhuma barra de rolagem */
+  flex-grow: 1; /* Faz com que o conteúdo use todo o espaço vertical disponível */
+}
+
+.debug-menu-toggle {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 10px;
+  right: -40px;
+  background: #555;
   color: white;
-  padding: 5px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 50%;
   cursor: pointer;
 }
 
-.debug-options button:hover {
-  background-color: #0056b3;
+.funds-control,
+.debug-menu-content button {
+  display: block; /* Faz com que cada botão e o controle de fundos ocupem sua própria linha */
+  width: calc(100% - 40px); /* Subtrai o padding do container do debug-menu */
+  margin-bottom: 10px; /* Espaço entre os elementos */
+}
+
+.funds-control {
+  display: block;
+  overflow: hidden; /* Espaço extra no final do controle de fundos */
+}
+
+.funds-control input,
+.funds-control button {
+  margin: 2px;
+  padding: 10px;
+  border: 1px solid #888;
+  background: #fff;
+  color: #333;
+}
+
+.funds-control input {
+  flex-grow: 1;
+}
+
+.funds-control button {
+  flex-shrink: 0;
 }

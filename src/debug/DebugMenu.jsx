@@ -1,20 +1,36 @@
-// DebugMenu.js
 import React, { useState } from 'react';
-import './DebugMenu.css'; // Certifique-se de que este arquivo contém todos os estilos necessários
+import './DebugMenu.css';
 
-const DebugMenu = ({ addFunds, forceWin, forceLose }) => {
+const DebugMenu = ({ addFunds, forceWin, forceLose, removeFunds }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [fundsToModify, setFundsToModify] = useState(100);
+
+  const handleAddFunds = () => {
+    addFunds(Math.abs(parseInt(fundsToModify, 10)));
+  };
+
+  const handleRemoveFunds = () => {
+    removeFunds(Math.abs(parseInt(fundsToModify, 10)));
+  };
 
   return (
-    <div className="debug-menu">
-      <button onClick={() => setIsOpen(!isOpen)}>Debug Menu</button>
-      {isOpen && (
-        <div className="debug-options">
-          <button onClick={forceWin}>Forçar Vitória</button>
-          <button onClick={forceLose}>Forçar Derrota</button>
-          <button onClick={() => addFunds(100)}>Adicionar $100</button>
+    <div className={`debug-menu ${isOpen ? 'open' : ''}`}>
+      <div className="debug-menu-content">
+        <button onClick={forceWin}>Forçar Vitória</button>
+        <button onClick={forceLose}>Forçar Derrota</button>
+        <div className="funds-control">
+          <input
+            type="number"
+            value={fundsToModify}
+            onChange={(e) => setFundsToModify(e.target.value)}
+          />
+          <button onClick={handleAddFunds}>Adicionar Fundos</button>
+          <button onClick={handleRemoveFunds}>Remover Fundos</button>
         </div>
-      )}
+      </div>
+      <button className="debug-menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? '<' : '>'}
+      </button>
     </div>
   );
 };

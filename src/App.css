@@ -1,26 +1,74 @@
 .App {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  text-align: center;
   background-color: #282828;
   color: white;
   font-family: 'Arial', sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-input[type="number"] {
-  font-size: 20px;
-  padding: 5px 15px;
-  margin: 15px;
-  width: 150px;
+/* Adaptação para telas menores */
+@media (max-width: 768px) {
+  .App {
+    padding: 5px;
+  }
+
+  .controls {
+    width: 95%;
+  }
+
+  .bet-input, .spin-button, .balance, .winMessage, .error-message {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .spin-button {
+    padding: 10px;
+  }
+}
+
+/* Adaptação para telas muito pequenas ou dispositivos móveis */
+@media (max-width: 480px) {
+  .bet-input, .spin-button, .balance, .winMessage, .error-message {
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .spin-button {
+    padding: 8px 10px;
+  }
+
+  .controls {
+    width: 100%;
+  }
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.bet-input, .spin-button, .balance, .winMessage, .error-message {
+  margin: 10px 0;
+}
+
+.bet-input {
+  font-size: 1.2rem;
+  padding: 10px;
   border: 2px solid #ddd;
   border-radius: 5px;
+  width: auto; /* Garanta que o input não exceda a largura da tela */
+  max-width: 300px; /* Ou qualquer valor máximo que pareça bom */
 }
 
-button {
+.spin-button {
   background-color: #dc3545;
-  color: #fff;
+  color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -29,18 +77,26 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.spin-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.spin-button:hover {
   background-color: #c82333;
 }
 
 .balance {
   font-size: 24px;
   color: #ffd700;
-  margin-top: 15px;
 }
 
 .winMessage {
   color: #4caf50;
   font-size: 24px;
-  margin-top: 15px;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 18px;
 }

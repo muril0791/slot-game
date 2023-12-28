@@ -1,0 +1,35 @@
+  
+  .menu-history h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .history-item {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #000;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(to bottom, #333, #222);
+  }
+  
+  .mini-slot {
+    border: 1px solid #ccc;
+    padding: 5px;
+  }
+  
+  .mini-row {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .mini-cell {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    margin: 0 2px;
+  }
+  

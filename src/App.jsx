@@ -1,7 +1,60 @@
 import React, { useState } from "react";
-import SlotMachine from "./Slot/SlotMachine";
-import DebugMenu from "./debug/DebugMenu";
+import SlotMachineClass from "./Slot/SlotMachine";
+import SlotDisplay from "./Slot/SlotDisplay";
+import MenuHistory from "./menu/menu-history";
+import FloatingMenu from "./menu/FloatingMenu"; // Importe o componente FloatingMenu
+import DebugMenu from "./debug/DebugMenu"; // Importe o componente DebugMenu
 import "./App.css";
+
+const symbols = ["🍒", "🍋", "🔔", "💎", "7️⃣", "🃏"];
+const wildSymbol = "W";
+const paytable = {
+  AAA: 10,
+  AAAA: 40,
+  AAAAA: 200,
+  BBB: 5,
+  BBBB: 25,
+  BBBBB: 100,
+  CCC: 3,
+  CCCC: 15,
+  CCCCC: 75,
+  DDD: 2,
+  DDDD: 10,
+  DDDDD: 50,
+  EEE: 1,
+  EEEE: 5,
+  EEEEE: 25,
+  WWW: 50,
+  WWWW: 200,
+  WWWWW: 1000,
+  // Combinações com 2 wilds
+  WWX: 30,
+  WWXX: 100,
+  WWXXX: 500,
+  // Combinações com 1 wild
+  WXX: 15,
+  WXXX: 75,
+  WXXXX: 250,
+  // Combinações com wilds e outros símbolos específicos
+  AWW: 20,
+  AWWW: 80,
+  AWWWW: 400,
+  BWW: 10,
+  BWWW: 40,
+  BWWWW: 200,
+  CWW: 6,
+  CWWW: 24,
+  CWWWW: 120,
+  DWW: 4,
+  DWWW: 16,
+  DWWWW: 80,
+  EWW: 2,
+  EWWW: 8,
+  EWWWW: 40,
+  // ... e assim por diante para cada combinação de símbolo regular com wilds ...
+};
+
+const slotMachine = new SlotMachineClass(symbols, paytable, wildSymbol);
 
 const App = () => {
   const [balance, setBalance] = useState(100);
@@ -9,111 +62,112 @@ const App = () => {
   const [lastWin, setLastWin] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [results, setResults] = useState(Array(5).fill(Array(3).fill("🍒")));
-
-  const symbols = ["🍒", "🍋", "🔔", "💎", "7️⃣"];
-  const paylines = [
-    // Linhas horizontais
-    [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]], // Linha superior
-    [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1]], // Linha do meio
-    [[0, 2], [1, 2], [2, 2], [3, 2], [4, 2]], // Linha inferior
-  
-    // Linhas diagonais
-    [[0, 0], [1, 1], [2, 2], [3, 1], [4, 0]], // Diagonal de cima para baixo
-    [[0, 2], [1, 1], [2, 0], [3, 1], [4, 2]], // Diagonal de baixo para cima
-  
-    // Linhas em forma de V
-    [[0, 0], [1, 0], [2, 1], [3, 0], [4, 0]], // V de cabeça para baixo
-    [[0, 2], [1, 2], [2, 1], [3, 2], [4, 2]], // V normal
-  
-    // Linhas ziguezague
-    [[0, 0], [1, 1], [2, 0], [3, 1], [4, 0]], // Ziguezague começando em cima
-    [[0, 2], [1, 1], [2, 2], [3, 1], [4, 2]], // Ziguezague começando em baixo
-  
-    // Outras combinações variadas
-    [[0, 1], [1, 0], [2, 1], [3, 2], [4, 1]], // Outro padrão
-    [[0, 1], [1, 2], [2, 1], [3, 0], [4, 1]], // Mais um padrão
-    // Adicione mais linhas conforme desejado
-  ];
-  
+  const [errorMessage, setErrorMessage] = useState("");
+  const [history, setHistory] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Adicionado estado para controlar a abertura do menu
+  const [isDebugOpen, setIsDebugOpen] = useState(false); // Adicionado estado para controlar a abertura do menu de depuração
 
   const spin = () => {
     if (balance < bet) {
-      alert("Saldo insuficiente para girar.");
+      setErrorMessage("Saldo insuficiente para girar.");
       return;
     }
-  
+
+    setErrorMessage("");
+    setBalance((prevBalance) => prevBalance - bet);
     setIsSpinning(true);
-  
-    // Define uma nova sequência de símbolos
+
     setTimeout(() => {
-      const newResults = results.map(column =>
-        column.map(() => symbols[Math.floor(Math.random() * symbols.length)])
-      );
-  
+      const newResults = slotMachine.spin();
       setResults(newResults);
-      const winAmount = checkForWin(newResults);
+      const winAmount = slotMachine.checkWin(newResults);
       setLastWin(winAmount);
-      setBalance(balance - bet + winAmount);
+      setBalance((prevBalance) => prevBalance + winAmount);
       setIsSpinning(false);
-    }, 1000); // O tempo aqui deve corresponder à duração da sua animação
-  };
 
-  const checkForWin = (newResults) => {
-    let winAmount = 0;
-    for (let line of paylines) {
-      const firstSymbol = newResults[line[0][0]][line[0][1]];
-      if (line.every(([col, row]) => newResults[col][row] === firstSymbol)) {
-        winAmount += 10; // Altere de acordo com sua tabela de pagamentos
-      }
-    }
-    return winAmount;
-  };
-
-  const forceWin = () => {
-    const winSymbol = symbols[0]; // Altere para o símbolo desejado
-    const winningResults = Array(5).fill(Array(3).fill(winSymbol));
-    setResults(winningResults);
-    setLastWin(50); // Valor arbitrário para a vitória forçada
-    setBalance(balance - bet + 50); // Atualiza o saldo
-  };
-
-  const forceLose = () => {
-    const losingResults = Array(5).fill(Array(3).fill(symbols[1])); // Altere para símbolos que não resultam em vitória
-    setResults(losingResults);
-    setLastWin(0);
-    setBalance(balance - bet);
-  };
-
-  const addFunds = (amount) => {
-    setBalance(balance + amount);
+      // Adicione o resultado ao histórico
+      const resultItem = {
+        results: newResults,
+        winAmount,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setHistory((prevHistory) => [resultItem, ...prevHistory]);
+    }, 2000); // Este é o tempo da animação do giro, ajuste conforme necessário
   };
 
   const handleBetChange = (e) => {
     const newBet = parseInt(e.target.value, 10);
     if (!isNaN(newBet) && newBet > 0 && newBet <= balance) {
       setBet(newBet);
+      setErrorMessage("");
+    } else {
+      setErrorMessage("Aposta inválida.");
     }
+  };
+
+  // Função para alternar a abertura/fechamento do menu
+  const toggleMenu = () => {
+    setIsMenuOpen((prevIsMenuOpen) => !prevIsMenuOpen);
+  };
+
+  // Função para alternar a abertura/fechamento do menu de depuração
+  const toggleDebugMenu = () => {
+    setIsDebugOpen((prevIsDebugOpen) => !prevIsDebugOpen);
   };
 
   return (
     <div className="App">
-      <input
-        type="number"
-        value={bet}
-        onChange={handleBetChange}
-        min="1"
-        max={balance}
-      />
-      <SlotMachine results={results} spin={spin} isSpinning={isSpinning} />
-      <DebugMenu
-        addFunds={addFunds}
-        forceWin={forceWin}
-        forceLose={forceLose}
-      />
-      <div className="balance">Saldo: ${balance}</div>
-      {lastWin > 0 && (
-        <div className="winMessage">Você ganhou: ${lastWin}!</div>
+      <header className="App-header">
+        <button onClick={toggleMenu}>Menu History</button>{" "}
+      </header>
+
+      <div className="menu-container">
+        {isMenuOpen && <MenuHistory history={history} />}
+      </div>
+
+      {isDebugOpen && (
+        <DebugMenu
+          addFunds={(amount) => setBalance((prev) => prev + amount)}
+          forceWin={() => {
+            const winAmount = 50;
+            setResults(slotMachine.spin());
+            setLastWin(winAmount);
+            setBalance((prevBalance) => prevBalance + winAmount);
+          }}
+          forceLose={() => {
+            setResults(slotMachine.spin());
+            setLastWin(0);
+          }}
+          removeFunds={(amount) => setBalance((prev) => prev - amount)}
+        />
       )}
+      <main className="main-content">
+        <SlotDisplay results={results} isSpinning={isSpinning} />
+        <div className="controls">
+          <input
+            type="number"
+            className="bet-input"
+            value={bet}
+            onChange={handleBetChange}
+            min="1"
+            max={balance}
+            disabled={isSpinning}
+          />
+          <button
+            className="spin-button"
+            onClick={spin}
+            disabled={isSpinning || bet > balance}
+          >
+            {isSpinning ? "Girando..." : "Girar"}
+          </button>
+          <div className="balance-display">Saldo: ${balance}</div>
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
+        </div>
+      </main>
+      <footer className="App-footer">
+        <button onClick={toggleDebugMenu}>Toggle Debug Menu</button>{" "}
+        {/* Botão para abrir/fechar o menu de depuração */}
+      </footer>
     </div>
   );
 };
