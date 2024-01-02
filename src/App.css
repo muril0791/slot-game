@@ -9,7 +9,21 @@
   padding: 10px;
   box-sizing: border-box;
 }
-
+.App-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  background-color: #282828;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  padding: 10px;
+}
+.menus > button{
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  background-color: #ffd700;
+}
 /* Adaptação para telas menores */
 @media (max-width: 768px) {
   .App {

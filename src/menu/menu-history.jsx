@@ -1,5 +1,5 @@
 import React from "react";
-import "./menu-history.css"; // Certifique-se de ter um arquivo CSS para estilizar o histórico
+import "./menu-history.css"; 
 
 const MenuHistory = ({ history }) => {
   return (
@@ -23,6 +23,9 @@ const MenuHistory = ({ history }) => {
           <div className="timestamp">{"Hora: " + item.timestamp}</div>
         </div>
       ))}
+       {/* <button className="debug-menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? '<' : '>'}
+      </button> */}
     </div>
   );
 };
