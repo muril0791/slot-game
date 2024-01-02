@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SlotMachineClass from "../SlotMachine"; // Ajuste o caminho conforme necessário
+import paylines from '../../payLines';
 
 const useSlotMachine = (initialBalance, betAmount, symbols, paytable, wildSymbol) => {
   const [balance, setBalance] = useState(initialBalance);
@@ -8,11 +9,10 @@ const useSlotMachine = (initialBalance, betAmount, symbols, paytable, wildSymbol
   const [isSpinning, setIsSpinning] = useState(false);
   const [history, setHistory] = useState([]);
 
-  const slotMachine = new SlotMachineClass(symbols, paytable, wildSymbol);
+  const slotMachine = new SlotMachineClass(symbols, paytable, wildSymbol, paylines);
 
   const spin = () => {
     if (balance < betAmount) {
-      // Lógica para lidar com saldo insuficiente
       return "Saldo insuficiente para girar.";
     }
 

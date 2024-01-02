@@ -5,6 +5,7 @@ import DebugMenu from "./debug/DebugMenu";
 import useSlotMachine from "./Slot/hook/useSlotMachine";
 import symbols from "./symbols";
 import paytable from "./payTables";
+import paylines from "./payLines";
 import "./App.css";
 
 const App = () => {
@@ -24,7 +25,7 @@ const App = () => {
     history,
     slotMachine,
     setHistory,
-  } = useSlotMachine(100, bet, symbols, paytable);
+  } = useSlotMachine(100, bet, symbols, paytable, paylines);
 
   const transformResults = (results) => {
     const transformed = Array(5).fill().map(() => Array(3));
