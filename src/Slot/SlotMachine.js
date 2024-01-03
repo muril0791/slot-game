@@ -1,9 +1,10 @@
 class SlotMachine {
-  constructor(symbols, paytable, paylines, wildSymbol, rows = 3, columns = 5) {
+  constructor(symbols, paytable, paylines, wildSymbol, scatterSymbol, rows = 3, columns = 5) {
     this.symbols = symbols;
     this.paytable = paytable;
     this.paylines = paylines;
     this.wildSymbol = wildSymbol;
+    this.scatterSymbol = scatterSymbol;
     this.rows = rows;
     this.columns = columns;
   }
@@ -21,20 +22,27 @@ class SlotMachine {
   }
 
   checkWin(reels) {
-    if (!reels || !this.paylines) {
-      console.error("reels or paylines are undefined");
-      return 0;
-    }
-
     let totalWin = 0;
     this.paylines.forEach((payline) => {
-      let symbolsOnPayline = payline.map((rowIndex, colIndex) => reels[colIndex][rowIndex]);
-      let uniqueSymbols = new Set(symbolsOnPayline);
-      if (uniqueSymbols.size === 1 || (uniqueSymbols.size === 2 && uniqueSymbols.has(this.wildSymbol))) {
-        let symbol = uniqueSymbols.has(this.wildSymbol)
-          ? [...uniqueSymbols].filter((s) => s !== this.wildSymbol)[0]
-          : uniqueSymbols.values().next().value;
-        totalWin += this.paytable[symbol] * (uniqueSymbols.has(this.wildSymbol) ? 2 : 1);
+      let symbolsOnPayline = payline.map((rowIndex, colIndex) => reels[rowIndex][colIndex]);
+      let count = 1;
+      let lastSymbol = null;
+
+      for (let symbol of symbolsOnPayline) {
+        if (symbol === lastSymbol) {
+          count++;
+        } else {
+          if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+            totalWin += this.paytable[lastSymbol][count.toString()];
+          }
+          count = 1;
+        }
+        lastSymbol = symbol;
+      }
+
+      // Verifica a última sequência
+      if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+        totalWin += this.paytable[lastSymbol][count.toString()];
       }
     });
 
@@ -50,7 +58,8 @@ class SlotMachine {
           let subLine = line.slice(i, i + length);
           let pattern = this.createPattern(subLine);
           if (pattern in this.paytable) {
-            winAmount += this.paytable[pattern];
+            let outcome = this.paytable[pattern];
+            winAmount += outcome.win ? outcome.win : 0;
             break;
           }
         }
@@ -59,23 +68,19 @@ class SlotMachine {
     return winAmount;
   }
 
-  createPattern(subLine) {
-    let wildCount = subLine.filter(
-      (symbol) => symbol === this.wildSymbol
-    ).length;
-    let pattern = subLine
-      .map((symbol) => (symbol === this.wildSymbol ? this.wildSymbol : "X"))
-      .join("");
+  createPattern(line) {
+    let wildCount = line.filter(symbol => symbol === this.wildSymbol).length;
+    let scatterCount = line.filter(symbol => symbol === this.scatterSymbol).length;
 
-    if (wildCount > 0 && wildCount < subLine.length) {
-      pattern =
-        Array(subLine.length).fill("W").join("").slice(0, wildCount) +
-        Array(subLine.length)
-          .fill("X")
-          .join("")
-          .slice(0, subLine.length - wildCount);
+    if (scatterCount > 0) {
+      return 'SCATTER';
+    } else if (wildCount === line.length) {
+      return 'WILD';
+    } else if (wildCount > 0) {
+      return line.map(symbol => symbol === this.wildSymbol ? 'WILD' : symbol).join('');
+    } else {
+      return line.join('');
     }
-    return pattern;
   }
 }
 

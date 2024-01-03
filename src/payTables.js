@@ -1,40 +1,16 @@
 const paytable = {
-  // Padrões básicos para três símbolos iguais
-  "🍒🍒🍒": 50,
-  "🍋🍋🍋": 75,
-  "🔔🔔🔔": 100,
-  "💎💎💎": 150,
-  "7️⃣7️⃣7️⃣": 250,
-
-  // Padrões para quatro símbolos iguais
-  "🍒🍒🍒🍒": 100,
-  "🍋🍋🍋🍋": 150,
-  "🔔🔔🔔🔔": 200,
-  "💎💎💎💎": 300,
-  "7️⃣7️⃣7️⃣7️⃣": 500,
-
-  // Padrões para cinco símbolos iguais
-  "🍒🍒🍒🍒🍒": 200,
-  "🍋🍋🍋🍋🍋": 300,
-  "🔔🔔🔔🔔🔔": 400,
-  "💎💎💎💎💎": 600,
-  "7️⃣7️⃣7️⃣7️⃣7️⃣": 1000,
-
-  // Wilds e scatters
-  "WILD": "wild", // 'WILD' pode ser usado para substituir qualquer outro símbolo
-  "SCATTER": "scatter", // 'SCATTER' pode ter regras especiais, como pagar em qualquer posição
-
-  // Combinações especiais e bônus
-  "BÔNUS": { // Algum padrão específico ou símbolo que aciona um bônus
-    win: 0, // Não dá ganho imediato
-    bonusGame: true // Aciona um jogo de bônus
-  },
-
-  // Multiplicadores e rodadas grátis
-  "MULTI": { // Alguma combinação que aciona um multiplicador
-    winMultiplier: 2, // Duplica o ganho
-    freeSpins: 10, // Concede 10 rodadas grátis
-  },
+  "🍒": { "3": 50, "4": 100, "5": 200 },
+  "🍋": { "3": 60, "4": 120, "5": 240 },
+  "🔔": { "3": 70, "4": 140, "5": 280 },
+  "💎": { "3": 80, "4": 160, "5": 320 },
+  "7️⃣": { "3": 90, "4": 180, "5": 360 },
+  "🃏": { "3": 100, "4": 200, "5": 400 },
+  "🌟": { "3": 110, "4": 220, "5": 440 },
+  "💰": { "3": 120, "4": 240, "5": 480 },
+  "🎰": { "3": 130, "4": 260, "5": 520 },
+  "🍀": { "3": 140, "4": 280, "5": 560 },
+  "💣": { "3": 150, "4": 300, "5": 600 },
+  // Adicione outros padrões conforme necessário, como Wilds e Scatters
 };
 
 export default paytable;

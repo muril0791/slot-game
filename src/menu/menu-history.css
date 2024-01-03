@@ -1,14 +1,15 @@
   
   
   .menu-history{
-    width: 350px;
-    height: 500px;
+    width: 400px;
+    height: 550px;
     overflow: auto;
     position: absolute;
     background-color: #222;
-    padding: 8px;
+    padding: 1em;
     border-radius: 20px;
     margin-top: 5em;
+    border: 2px solid white;
   }
   .menu-history h2 {
     font-size: 18px;

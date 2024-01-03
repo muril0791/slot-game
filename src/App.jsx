@@ -25,7 +25,7 @@ const App = () => {
     history,
     slotMachine,
     setHistory,
-  } = useSlotMachine(100, bet, symbols, paytable, paylines);
+  } = useSlotMachine(100, bet, symbols, paytable, paylines, "WILD", "SCATTER");
 
   const transformResults = (results) => {
     const transformed = Array(5).fill().map(() => Array(3));
@@ -34,7 +34,7 @@ const App = () => {
         transformed[col][row] = results[row][col];
       }
     }
-    return transformed;
+    return transformed, results;
   };
 
   const handleBetChange = (e) => {

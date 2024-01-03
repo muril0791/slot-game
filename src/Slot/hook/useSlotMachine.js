@@ -2,14 +2,14 @@ import { useState } from 'react';
 import SlotMachineClass from "../SlotMachine"; // Ajuste o caminho conforme necessário
 import paylines from '../../payLines';
 
-const useSlotMachine = (initialBalance, betAmount, symbols, paytable, wildSymbol) => {
+const useSlotMachine = (initialBalance, betAmount, symbols, paytable, paylines, wildSymbol, scatterSymbol) => {
   const [balance, setBalance] = useState(initialBalance);
   const [lastWin, setLastWin] = useState(0);
   const [results, setResults] = useState(Array(5).fill(Array(3).fill(symbols[0])));
   const [isSpinning, setIsSpinning] = useState(false);
   const [history, setHistory] = useState([]);
 
-  const slotMachine = new SlotMachineClass(symbols, paytable, wildSymbol, paylines);
+  const slotMachine = new SlotMachineClass(symbols, paytable, paylines, wildSymbol, scatterSymbol);
 
   const spin = () => {
     if (balance < betAmount) {
