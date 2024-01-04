@@ -21,34 +21,35 @@ class SlotMachine {
     return grid;
   }
 
-  checkWin(reels) {
+  checkWin(reels, betAmount) {
     let totalWin = 0;
+
     this.paylines.forEach((payline) => {
       let symbolsOnPayline = payline.map((rowIndex, colIndex) => reels[rowIndex][colIndex]);
       let count = 1;
       let lastSymbol = null;
 
-      for (let symbol of symbolsOnPayline) {
-        if (symbol === lastSymbol) {
+      for (let i = 0; i < symbolsOnPayline.length; i++) {
+        let symbol = symbolsOnPayline[i];
+        if (symbol === lastSymbol || symbol === this.wildSymbol) {
           count++;
         } else {
-          if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-            totalWin += this.paytable[lastSymbol][count.toString()];
+          if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count]) {
+            totalWin += this.paytable[lastSymbol][count] * betAmount;
           }
           count = 1;
+          lastSymbol = symbol;
         }
-        lastSymbol = symbol;
       }
 
-      // Verifica a última sequência
-      if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-        totalWin += this.paytable[lastSymbol][count.toString()];
+      // Verificar última sequência de símbolos
+      if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count]) {
+        totalWin += this.paytable[lastSymbol][count] * betAmount;
       }
     });
 
     return totalWin;
   }
-
 
   checkLineWin(line) {
     let winAmount = 0;
@@ -69,17 +70,21 @@ class SlotMachine {
   }
 
   createPattern(line) {
-    let wildCount = line.filter(symbol => symbol === this.wildSymbol).length;
-    let scatterCount = line.filter(symbol => symbol === this.scatterSymbol).length;
+    let wildCount = line.filter((symbol) => symbol === this.wildSymbol).length;
+    let scatterCount = line.filter(
+      (symbol) => symbol === this.scatterSymbol
+    ).length;
 
     if (scatterCount > 0) {
-      return 'SCATTER';
+      return "SCATTER";
     } else if (wildCount === line.length) {
-      return 'WILD';
+      return "WILD";
     } else if (wildCount > 0) {
-      return line.map(symbol => symbol === this.wildSymbol ? 'WILD' : symbol).join('');
+      return line
+        .map((symbol) => (symbol === this.wildSymbol ? "WILD" : symbol))
+        .join("");
     } else {
-      return line.join('');
+      return line.join("");
     }
   }
 }

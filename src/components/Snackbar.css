@@ -1,0 +1,28 @@
+.snackbar {
+    visibility: hidden; /* Escondido por padrão */
+    min-width: 250px;
+    background-color: #db1d1d; /* Cor padrão */
+    color: white;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    top: 30px;
+    transform: translateX(-50%);
+    transition: visibility 0.5s, background-color 0.5s;
+  }
+  
+  .snackbar.show {
+    visibility: visible; /* Mostra o Snackbar */
+  }
+  
+  .snackbar.success {
+    background-color: #4CAF50; /* Verde para sucesso */
+  }
+  
+  .snackbar.error {
+    background-color: #f44336; /* Vermelho para erro */
+  }
+  

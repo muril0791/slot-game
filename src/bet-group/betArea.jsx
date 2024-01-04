@@ -2,14 +2,15 @@ import React from "react";
 import { ImSpinner11 } from "react-icons/im";
 import { IoStopOutline } from "react-icons/io5";
 import './betArea.css'
+
 const BetArea = ({ bet, setBet, handleSpinClick, handleAutoPlayStart, handleBetChange, balance, autoSpinCount, setAutoSpinCount, isSpinning }) => {
   return (
     <div className="bet-area">
-      <input
+       <input
         type="number"
         className="bet-input"
         value={bet}
-        onChange={handleBetChange}
+        onChange={handleBetChange} // Usa a função handleBetChange passada do App.jsx
         min="1"
         max="50"
         disabled={isSpinning}
@@ -28,7 +29,7 @@ const BetArea = ({ bet, setBet, handleSpinClick, handleAutoPlayStart, handleBetC
         min="1"
         disabled={isSpinning}
       />
-      <button onClick={handleAutoPlayStart} disabled={isSpinning}>
+      <button onClick={handleAutoPlayStart} disabled>
         AutoPlay
       </button>
     </div>

@@ -7,6 +7,7 @@ import symbols from "./assets/symbol-icon/symbols";
 import paytable from "./math/slot-pays/payTables";
 import paylines from "./math/slot-pays/payLines";
 import BetArea from "./bet-group/betArea";
+import Snackbar from "./components/Snackbar";
 import "./App.css";
 
 const App = () => {
@@ -14,6 +15,8 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [autoSpinCount, setAutoSpinCount] = useState(0);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarType, setSnackbarType] = useState("");
   const {
     balance,
     setBalance,
@@ -45,18 +48,18 @@ const App = () => {
     const newBet = parseInt(e.target.value, 10);
     if (!isNaN(newBet) && newBet > 0 && newBet <= balance) {
       setBet(newBet);
-      setErrorMessage("");
     } else {
       setErrorMessage("Aposta inválida.");
+      showSnackbar("Aposta inválida.", "error");
     }
   };
 
   const handleSpinClick = () => {
     if (balance < bet) {
       setErrorMessage("Saldo insuficiente para girar.");
+      showSnackbar("Saldo insuficiente para girar.", "error");
       return;
     }
-
     setIsSpinning(true);
     setErrorMessage("");
     setBalance((prev) => prev - bet);
@@ -65,13 +68,18 @@ const App = () => {
       const newResults = slotMachine.spin();
       const transformedResults = transformResults(newResults);
       setResults(transformedResults);
-      const winAmount = slotMachine.checkWin(transformedResults);
+      const winAmount = slotMachine.checkWin(transformedResults, bet);
       setLastWin(winAmount);
       setBalance((prev) => prev + winAmount);
       setIsSpinning(false);
 
+      if (winAmount > 0) {
+        showSnackbar(`Você ganhou $${winAmount}!`, "success");
+      }
+
       const resultItem = {
         results: transformedResults,
+        betAmount: bet,
         winAmount,
         timestamp: new Date().toLocaleTimeString(),
       };
@@ -87,13 +95,20 @@ const App = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const showSnackbar = (message, type) => {
+    setSnackbarMessage(message);
+    setSnackbarType(type);
+    setTimeout(() => {
+      setSnackbarMessage("");
+    }, 3000);
+  };
+
   return (
     <div className="body-app">
       <div className="App-menu">
         <button className="history-button" onClick={toggleMenu}>
           🕓
         </button>
-
         {isMenuOpen && <MenuHistory history={history} />}
         <DebugMenu
           addFunds={(amount) => setBalance((prev) => prev + amount)}
@@ -128,12 +143,18 @@ const App = () => {
               autoSpinCount={autoSpinCount}
               setAutoSpinCount={setAutoSpinCount}
               isSpinning={isSpinning}
-            />
-            <div className="balance-display">Saldo: ${balance}</div>
-            {errorMessage && (
-              <div className="error-message">{errorMessage}</div>
-            )}
-            <div className="last-win-display">Última Vitória: ${lastWin}</div>
+            >
+              {snackbarMessage && (
+                <Snackbar message={snackbarMessage} type={snackbarType} />
+              )}
+            </BetArea>
+            <div className="info-bet">
+              <div >Saldo: <span className="balance-display">${balance}</span> </div>
+              {errorMessage && (
+                <div className="error-message">{errorMessage}</div>
+              )}
+              <div >Última Vitória: <span className="last-win-display">${lastWin}</span> </div>
+            </div>
           </div>
         </main>
       </div>
