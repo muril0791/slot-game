@@ -9,17 +9,78 @@ class SlotMachine {
     this.columns = columns;
   }
 
-  spin() {
-    let grid = [];
-    for (let i = 0; i < this.rows; i++) {
-      let row = [];
-      for (let j = 0; j < this.columns; j++) {
-        row.push(this.symbols[Math.floor(Math.random() * this.symbols.length)]);
+  generateSpinResult() {
+    const random = Math.random() * 100;
+    let grid = Array(this.rows).fill().map(() => Array(this.columns).fill(null));
+
+    const fillRemainingSymbols = () => {
+      for (let row = 0; row < this.rows; row++) {
+        for (let col = 0; col < this.columns; col++) {
+          if (!grid[row][col]) {
+            grid[row][col] = this.getRandomSymbol();
+          }
+        }
       }
-      grid.push(row);
+    };
+
+    if (random < 0.3) {
+      // 0.3% chance - Todas as posições com o mesmo ícone
+      const symbol = this.getRandomSymbol();
+      grid = grid.map(row => row.map(() => symbol));
+    } else if (random < 6) {
+      // 5.7% chance - Uma coluna e uma linha com o mesmo ícone
+      const symbol = this.getRandomSymbol();
+      const randomRow = Math.floor(Math.random() * this.rows);
+      const randomColumn = Math.floor(Math.random() * this.columns);
+
+      grid[randomRow].fill(symbol);
+      grid.forEach(row => row[randomColumn] = symbol);
+    } else if (random < 20) {
+      // 14% chance - Uma linha inteira com o mesmo ícone
+      const symbol = this.getRandomSymbol();
+      const randomRow = Math.floor(Math.random() * this.rows);
+      grid[randomRow].fill(symbol);
+    } else if (random < 36) {
+      // 16% chance - Uma coluna inteira com o mesmo ícone
+      const symbol = this.getRandomSymbol();
+      const randomColumn = Math.floor(Math.random() * this.columns);
+      grid.forEach(row => row[randomColumn] = symbol);
+    } else if (random < 61) {
+      // 25% chance - Quatro ícones na linha
+      const symbol = this.getRandomSymbol();
+      const randomRow = Math.floor(Math.random() * this.rows);
+      grid[randomRow].fill(symbol, 0, 4);
+    } else if (random < 97) {
+      // 36% chance - Três ícones na linha
+      const symbol = this.getRandomSymbol();
+      const randomRow = Math.floor(Math.random() * this.rows);
+      grid[randomRow].fill(symbol, 0, 3);
+    } else {
+      // 3% chance - Nenhuma combinação vencedora
+      grid = grid.map(row => row.map(() => this.getRandomSymbol()));
     }
+
+    fillRemainingSymbols();
     return grid;
   }
+  spin() {
+    return this.generateSpinResult();
+  }
+  getRandomSymbol() {
+    return this.symbols[Math.floor(Math.random() * this.symbols.length)];
+  }
+
+  // spin() {
+  //   let grid = [];
+  //   for (let i = 0; i < this.rows; i++) {
+  //     let row = [];
+  //     for (let j = 0; j < this.columns; j++) {
+  //       row.push(this.symbols[Math.floor(Math.random() * this.symbols.length)]);
+  //     }
+  //     grid.push(row);
+  //   }
+  //   return grid;
+  // }
 
   checkWin(reels, betAmount) {
     let totalWin = 0;
