@@ -82,7 +82,7 @@ class SlotDisplay extends Component {
           ],
           {
             fontFamily: "Arial",
-            fontSize: 48,
+            fontSize: 88,
             fill: 0xffffff,
             align: "center",
           }
@@ -93,7 +93,6 @@ class SlotDisplay extends Component {
         column.addChild(symbolText);
       }
     }
-    
   }
 
   startSpinning() {
@@ -149,7 +148,7 @@ class SlotDisplay extends Component {
       newResults[columnIndex].forEach((symbol, rowIndex) => {
         const symbolText = new PIXI.Text(symbol, {
           fontFamily: "Arial",
-          fontSize: 48,
+          fontSize: 88,
           fill: 0xffffff,
           align: "center",
         });

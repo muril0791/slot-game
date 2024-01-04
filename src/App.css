@@ -1,13 +1,38 @@
+body{
+  padding: auto;
+  margin: auto;
+  height: 100% !important;
+  width: 100% !important;
+  background-image: url(./assets/slot-background.jpg);
+  background-repeat: no-repeat;
+  background-size: cover; /* Ajuste para cobrir o espaço disponível */
+  background-position: center;
+}
+
 .App {
-  min-height: 100vh;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #282828;
   color: white;
-  font-family: 'Arial', sans-serif;
-  padding: 10px;
+  font-family: "Arial", sans-serif;
+  padding: 11px;
   box-sizing: border-box;
+}
+
+.history-button{
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: 2px solid #c82333;
+  font-size: 25px;
+  text-align: center;
+  padding: 4px;
 }
 .App-menu {
   display: flex;
@@ -15,14 +40,7 @@
   align-items: flex-end;
   background-color: #282828;
   color: white;
-  font-family: 'Arial', sans-serif;
-  padding: 10px;
-}
-.menus > button{
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  background-color: #ffd700;
+  font-family: "Arial", sans-serif;
 }
 /* Adaptação para telas menores */
 @media (max-width: 768px) {
@@ -34,7 +52,11 @@
     width: 95%;
   }
 
-  .bet-input, .spin-button, .balance, .winMessage, .error-message {
+  .bet-input,
+  .spin-button,
+  .balance,
+  .winMessage,
+  .error-message {
     font-size: 16px;
     padding: 8px;
   }
@@ -46,7 +68,11 @@
 
 /* Adaptação para telas muito pequenas ou dispositivos móveis */
 @media (max-width: 480px) {
-  .bet-input, .spin-button, .balance, .winMessage, .error-message {
+  .bet-input,
+  .spin-button,
+  .balance,
+  .winMessage,
+  .error-message {
     font-size: 14px;
     padding: 5px;
   }
@@ -67,7 +93,11 @@
   margin-top: 20px;
 }
 
-.bet-input, .spin-button, .balance, .winMessage, .error-message {
+.bet-input,
+.spin-button,
+.balance,
+.winMessage,
+.error-message {
   margin: 10px 0;
 }
 
@@ -81,12 +111,14 @@
 }
 
 .spin-button {
-  background-color: #dc3545;
+  background-color: #30303044;
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 50%;
   font-size: 18px;
+  width: 72px;
+  height: 72px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }

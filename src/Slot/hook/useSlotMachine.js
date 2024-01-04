@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SlotMachineClass from "../SlotMachine"; // Ajuste o caminho conforme necessário
+import SlotMachineClass from "../../math/SlotMachine"; // Ajuste o caminho conforme necessário
 
 const useSlotMachine = (
   initialBalance,

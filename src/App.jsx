@@ -3,9 +3,10 @@ import SlotDisplay from "./Slot/SlotDisplay";
 import MenuHistory from "./menu/menu-history";
 import DebugMenu from "./debug/DebugMenu";
 import useSlotMachine from "./Slot/hook/useSlotMachine";
-import symbols from "./symbols";
-import paytable from "./payTables";
-import paylines from "./payLines";
+import symbols from "./assets/symbol-icon/symbols";
+import paytable from "./math/slot-pays/payTables";
+import paylines from "./math/slot-pays/payLines";
+import BetArea from "./bet-group/betArea";
 import "./App.css";
 
 const App = () => {
@@ -77,9 +78,6 @@ const App = () => {
       setHistory((prevHistory) => [resultItem, ...prevHistory]);
     }, 725);
   };
-  const handleAutoPlayChange = (e) => {
-    setAutoSpinCount(parseInt(e.target.value, 10));
-  };
 
   const handleAutoPlayStart = () => {
     startAutoPlay(autoSpinCount);
@@ -90,11 +88,11 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="body-app">
       <div className="App-menu">
-        <header className="menus">
-          <button onClick={toggleMenu}>🕓</button>
-        </header>
+        <button className="history-button" onClick={toggleMenu}>
+          🕓
+        </button>
 
         {isMenuOpen && <MenuHistory history={history} />}
         <DebugMenu
@@ -113,39 +111,24 @@ const App = () => {
         />
       </div>
       <div className="App">
-        <main className="main-content">
+        <main>
           <SlotDisplay
             results={results}
             isSpinning={isSpinning}
             symbols={symbols}
           />
           <div className="controls">
-            <input
-              type="number"
-              className="bet-input"
-              value={bet}
-              onChange={handleBetChange}
-              min="1"
-              max="50"
-              disabled={isSpinning}
+            <BetArea
+              bet={bet}
+              setBet={setBet}
+              handleSpinClick={handleSpinClick}
+              handleAutoPlayStart={handleAutoPlayStart}
+              handleBetChange={handleBetChange}
+              balance={balance}
+              autoSpinCount={autoSpinCount}
+              setAutoSpinCount={setAutoSpinCount}
+              isSpinning={isSpinning}
             />
-            <button
-              className="spin-button"
-              onClick={handleSpinClick}
-              disabled={isSpinning || bet > balance}
-            >
-              {isSpinning ? "Girando..." : "Girar"}
-            </button>
-            <input
-              type="number"
-              value={autoSpinCount}
-              onChange={handleAutoPlayChange}
-              min="1"
-              disabled={isSpinning}
-            />
-            <button onClick={handleAutoPlayStart} disabled={isSpinning}>
-              Iniciar AutoPlay
-            </button>
             <div className="balance-display">Saldo: ${balance}</div>
             {errorMessage && (
               <div className="error-message">{errorMessage}</div>
