@@ -35,6 +35,7 @@ const App = () => {
       }
     }
     return transformed, results;
+    return transformed;
   };
 
   const handleBetChange = (e) => {
