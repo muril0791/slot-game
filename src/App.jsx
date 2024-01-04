@@ -12,7 +12,7 @@ const App = () => {
   const [bet, setBet] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [autoSpinCount, setAutoSpinCount] = useState(0);
   const {
     balance,
     setBalance,
@@ -25,16 +25,18 @@ const App = () => {
     history,
     slotMachine,
     setHistory,
+    startAutoPlay,
   } = useSlotMachine(100, bet, symbols, paytable, paylines, "WILD", "SCATTER");
 
   const transformResults = (results) => {
-    const transformed = Array(5).fill().map(() => Array(3));
+    const transformed = Array(5)
+      .fill()
+      .map(() => Array(3));
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 5; col++) {
         transformed[col][row] = results[row][col];
       }
     }
-    return transformed, results;
     return transformed;
   };
 
@@ -74,6 +76,13 @@ const App = () => {
       };
       setHistory((prevHistory) => [resultItem, ...prevHistory]);
     }, 725);
+  };
+  const handleAutoPlayChange = (e) => {
+    setAutoSpinCount(parseInt(e.target.value, 10));
+  };
+
+  const handleAutoPlayStart = () => {
+    startAutoPlay(autoSpinCount);
   };
 
   const toggleMenu = () => {
@@ -126,6 +135,16 @@ const App = () => {
               disabled={isSpinning || bet > balance}
             >
               {isSpinning ? "Girando..." : "Girar"}
+            </button>
+            <input
+              type="number"
+              value={autoSpinCount}
+              onChange={handleAutoPlayChange}
+              min="1"
+              disabled={isSpinning}
+            />
+            <button onClick={handleAutoPlayStart} disabled={isSpinning}>
+              Iniciar AutoPlay
             </button>
             <div className="balance-display">Saldo: ${balance}</div>
             {errorMessage && (
