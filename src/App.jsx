@@ -3,7 +3,7 @@ import SlotDisplay from "./Slot/SlotDisplay";
 import MenuHistory from "./menu/menu-history";
 import DebugMenu from "./debug/DebugMenu";
 import useSlotMachine from "./Slot/hook/useSlotMachine";
-import { symbols } from './assets/symbol-icon/symbols';
+import { symbols } from "./assets/symbol-icon/symbols";
 import paytable from "./math/slot-pays/payTables";
 import paylines from "./math/slot-pays/payLines";
 import BetArea from "./bet-group/betArea";
@@ -19,6 +19,7 @@ const App = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
   const [animationSpeed, setAnimationSpeed] = useState(1);
+  const [winningSymbols, setWinningSymbols] = useState([]);
   const {
     balance,
     setBalance,
@@ -49,47 +50,52 @@ const App = () => {
     if (balance < bet) {
       setErrorMessage("Saldo insuficiente para girar.");
       showSnackbar("Saldo insuficiente para girar.", "error");
-      setIsAutoplay(false); // Parar o autoplay se o saldo for insuficiente
+      setIsAutoplay(false);
       return;
     }
-  
+
     setErrorMessage("");
-    setBalance(prev => prev - bet);
-    setIsSpinning(true); // Iniciar animação de spin
-  
+    setBalance((prev) => prev - bet);
+    setIsSpinning(true);
+
     setTimeout(() => {
       const newResults = slotMachine.spin();
       const transformedResults = transformResults(newResults);
       setResults(transformedResults);
-      const winAmount = slotMachine.checkWin(transformedResults, bet);
-      setLastWin(winAmount);
-      setBalance(prev => prev + winAmount);
-  
-      if (winAmount > 0) {
-        showSnackbar(`Você ganhou $${winAmount}!`, "success");
+
+      const winResult = slotMachine.checkWin(transformedResults, bet);
+      setLastWin(winResult.totalWin);
+      setBalance((prev) => prev + winResult.totalWin);
+
+      if (winResult.totalWin > 0) {
+        showSnackbar(`Você ganhou $${winResult.totalWin}!`, "success");
+        console.log("Símbolos vencedores: ", winResult.winningSymbols);
+        setWinningSymbols(winResult.winningSymbols);
+      } else {
+        setWinningSymbols([]);
       }
-  
+
       const resultItem = {
         results: transformedResults,
         betAmount: bet,
-        winAmount,
+        winAmount: winResult.totalWin,
         timestamp: new Date().toLocaleTimeString(),
       };
-      setHistory(prevHistory => [resultItem, ...prevHistory]);
-  
-      setIsSpinning(false); // Parar animação de spin
-  
+      setHistory((prevHistory) => [resultItem, ...prevHistory]); // Utilizando setHistory
+
+      setIsSpinning(false);
+
       if (isAutoplay && autoSpinCount > 0) {
-        setAutoSpinCount(prevCount => prevCount - 1);
+        setAutoSpinCount((prevCount) => prevCount - 1);
         if (autoSpinCount > 1) {
-          setTimeout(executeSpin, 725); // Aguardar a animação terminar antes do próximo spin
+          setTimeout(executeSpin, 725);
         } else {
-          setIsAutoplay(false); // Desativa o autoplay se não houver mais spins
+          setIsAutoplay(false);
         }
       }
-    }, 725); // Tempo de duração da animação de spin
+    }, 725);
   };
-  
+
   const handleSpinClick = () => {
     executeSpin();
   };
@@ -140,6 +146,7 @@ const App = () => {
       <div className="App">
         <main>
           <SlotDisplay
+            winningSymbols={winningSymbols}
             results={results}
             isSpinning={isSpinning}
             symbols={symbols}
@@ -162,11 +169,16 @@ const App = () => {
             )}
           </div>
           <div className="info-bet">
-            <div>Saldo: <span className="balance-display">${balance}</span></div>
+            <div>
+              Saldo: <span className="balance-display">${balance}</span>
+            </div>
             {errorMessage && (
               <div className="error-message">{errorMessage}</div>
             )}
-            <div>Última Vitória: <span className="last-win-display">${lastWin}</span></div>
+            <div>
+              Última Vitória:{" "}
+              <span className="last-win-display">${lastWin}</span>
+            </div>
           </div>
         </main>
       </div>

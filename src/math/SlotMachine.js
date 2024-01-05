@@ -82,41 +82,48 @@ class SlotMachine {
   //   return grid;
   // }
 
-   checkWin(reels, betAmount) {
+  checkWin(reels, betAmount) {
     let totalWin = 0;
+    let winningSymbols = []; // Armazenar as posições dos símbolos vencedores
 
-    // Verificação das linhas de pagamento regulares com suporte a Wild
     this.paylines.forEach((payline) => {
-      let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
-      let count = 1;
-      let lastSymbol = null;
+        let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
+        let count = 1;
+        let lastSymbol = null;
+        let paylineWinningPositions = [];
 
-      for (let symbol of symbolsOnPayline) {
-        if (symbol === this.wildSymbol || symbol === lastSymbol) {
-          count++;
-        } else {
-          if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-            totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-          }
-          count = 1;
+        for (let i = 0; i < symbolsOnPayline.length; i++) {
+            let symbol = symbolsOnPayline[i];
+            if (symbol === this.wildSymbol || symbol === lastSymbol) {
+                count++;
+                paylineWinningPositions.push(payline[i]);
+            } else {
+                if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+                    totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+                    winningSymbols.push(...paylineWinningPositions);
+                }
+                count = 1;
+                paylineWinningPositions = [payline[i]];
+            }
+            lastSymbol = symbol;
         }
-        lastSymbol = symbol;
-      }
 
-      // Verifica a última sequência
-      if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-        totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-      }
+        // Verifica a última sequência
+        if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+            totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+            winningSymbols.push(...paylineWinningPositions);
+        }
     });
 
     // Verificação para Scatter
     let scatterCount = reels.flat().filter(symbol => symbol === this.scatterSymbol).length;
     if (scatterCount >= 3) {
-      totalWin += (this.paytable[this.scatterSymbol][scatterCount.toString()] || 0) * betAmount;
+        totalWin += (this.paytable[this.scatterSymbol][scatterCount.toString()] || 0) * betAmount;
+        // Adicionar lógica aqui para identificar as posições dos scatters, se necessário
     }
 
-    return totalWin;
-  }
+    return { totalWin, winningSymbols };
+}
 
   
   

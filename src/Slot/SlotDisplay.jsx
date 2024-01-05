@@ -28,6 +28,10 @@ class SlotDisplay extends Component {
     } else if (!this.props.isSpinning && prevProps.isSpinning) {
       this.updateSymbols();
     }
+
+    if (this.props.winningSymbols !== prevProps.winningSymbols) {
+      this.animateWinningSymbols(this.props.winningSymbols);
+    }
   }
   createSlotMachine() {
     const { width, height } = this.app.renderer;
@@ -35,7 +39,7 @@ class SlotDisplay extends Component {
     const columnWidth = (width - margin * (5 + 1)) / 5;
     this.rowHeight = (height - margin * (3 + 1)) / 3;
 
-    this.columns = []; // Inicializa o array de colunas
+    this.columns = [];
 
     for (let i = 0; i < 5; i++) {
       const column = new PIXI.Container();
@@ -48,7 +52,6 @@ class SlotDisplay extends Component {
           this.props.symbols[
             Math.floor(Math.random() * this.props.symbols.length)
           ],
- // Ajustado para acessar os resultados corretamente
           {
             fontFamily: "Arial",
             fontSize: 88,
@@ -61,6 +64,31 @@ class SlotDisplay extends Component {
         symbolText.y = j * this.rowHeight + this.rowHeight / 2;
         column.addChild(symbolText);
       }
+    }
+  }
+  animateWinningSymbols(winningSymbols) {
+    const pulseAnimation = (symbol) => {
+      const speed = 200; // Valor menor que 500 para aumentar a velocidade
+      symbol.scale.x = 1.2 + Math.sin(new Date().getTime() / speed) * 0.2;
+      symbol.scale.y = 1.2 + Math.sin(new Date().getTime() / speed) * 0.2;
+    };
+
+    this.columns.forEach((column, columnIndex) => {
+      column.children.forEach((symbol, rowIndex) => {
+        const isWinningSymbol = winningSymbols.some(
+          (pos) => pos[0] === columnIndex && pos[1] === rowIndex
+        );
+        if (isWinningSymbol) {
+          pulseAnimation(symbol);
+        } else {
+          symbol.scale.x = 1.0;
+          symbol.scale.y = 1.0;
+        }
+      });
+    });
+
+    if (!this.props.isSpinning) {
+      requestAnimationFrame(() => this.animateWinningSymbols(winningSymbols));
     }
   }
 
