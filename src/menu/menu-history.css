@@ -11,7 +11,16 @@
   color: #fff; /* Cor do texto */
   font-family: Arial, sans-serif; /* Tipo de fonte */
 }
-
+.history-card{
+  display: flex;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: #000;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(to bottom, #ff8f26, #ff5858);
+  transition: transform 0.2s ease; 
+}
 .history-menu {
   position: fixed;
   top: 10;
@@ -54,14 +63,22 @@
 .history-menu-toggle:hover {
   background-color: #666; /* Efeito hover para o botão */
 }
-
+.divider{
+  width: 100%;
+  height: 2px;
+  background-color: white;
+}
 .menu-history h2 {
   font-size: 18px;
   margin-bottom: 10px;
   text-align: center;
 }
-
+.history-results{
+  width: 100%;
+  height: 100%;
+}
 .history-item {
+  width: 200px;
   display: flex;
   justify-content: space-between; /* Ajuste para alinhamento dos elementos */
   margin: 20px auto;
