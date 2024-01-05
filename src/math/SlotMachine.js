@@ -1,5 +1,13 @@
 class SlotMachine {
-  constructor(symbols, paytable, paylines, wildSymbol, scatterSymbol, rows = 3, columns = 5) {
+  constructor(
+    symbols,
+    paytable,
+    paylines,
+    wildSymbol,
+    scatterSymbol,
+    rows = 3,
+    columns = 5
+  ) {
     this.symbols = symbols;
     this.paytable = paytable;
     this.paylines = paylines;
@@ -11,7 +19,9 @@ class SlotMachine {
 
   generateSpinResult() {
     const random = Math.random() * 100;
-    let grid = Array(this.rows).fill().map(() => Array(this.columns).fill(null));
+    let grid = Array(this.rows)
+      .fill()
+      .map(() => Array(this.columns).fill(null));
 
     const fillRemainingSymbols = () => {
       for (let row = 0; row < this.rows; row++) {
@@ -26,7 +36,7 @@ class SlotMachine {
     if (random < 0.3) {
       // 0.3% chance - Todas as posições com o mesmo ícone
       const symbol = this.getRandomSymbol();
-      grid = grid.map(row => row.map(() => symbol));
+      grid = grid.map((row) => row.map(() => symbol));
     } else if (random < 2) {
       // 5.7% chance - Uma coluna e uma linha com o mesmo ícone
       const symbol = this.getRandomSymbol();
@@ -34,7 +44,7 @@ class SlotMachine {
       const randomColumn = Math.floor(Math.random() * this.columns);
 
       grid[randomRow].fill(symbol);
-      grid.forEach(row => row[randomColumn] = symbol);
+      grid.forEach((row) => (row[randomColumn] = symbol));
     } else if (random < 5) {
       // 14% chance - Uma linha inteira com o mesmo ícone
       const symbol = this.getRandomSymbol();
@@ -44,7 +54,7 @@ class SlotMachine {
       // 16% chance - Uma coluna inteira com o mesmo ícone
       const symbol = this.getRandomSymbol();
       const randomColumn = Math.floor(Math.random() * this.columns);
-      grid.forEach(row => row[randomColumn] = symbol);
+      grid.forEach((row) => (row[randomColumn] = symbol));
     } else if (random < 11) {
       // 25% chance - Quatro ícones na linha
       const symbol = this.getRandomSymbol();
@@ -57,7 +67,7 @@ class SlotMachine {
       grid[randomRow].fill(symbol, 0, 3);
     } else {
       // 3% chance - Nenhuma combinação vencedora
-      grid = grid.map(row => row.map(() => this.getRandomSymbol()));
+      grid = grid.map((row) => row.map(() => this.getRandomSymbol()));
     }
 
     fillRemainingSymbols();
@@ -70,67 +80,45 @@ class SlotMachine {
     return this.symbols[Math.floor(Math.random() * this.symbols.length)];
   }
 
-  // spin() {
-  //   let grid = [];
-  //   for (let i = 0; i < this.rows; i++) {
-  //     let row = [];
-  //     for (let j = 0; j < this.columns; j++) {
-  //       row.push(this.symbols[Math.floor(Math.random() * this.symbols.length)]);
-  //     }
-  //     grid.push(row);
-  //   }
-  //   return grid;
-  // }
-
   checkWin(reels, betAmount) {
     let totalWin = 0;
-    let winningSymbols = []; // Armazenar as posições dos símbolos vencedores
+    let winningSymbols = [];
 
     this.paylines.forEach((payline) => {
-        let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
-        let count = 1;
-        let lastSymbol = null;
-        let paylineWinningPositions = [];
+  let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
+  let count = 1; // Inicia a contagem como 1 porque já temos um símbolo inicial
+  let lastSymbol = symbolsOnPayline[0]; // O último símbolo começa com o primeiro símbolo da payline
+  let paylineWinningPositions = [payline[0]]; // Começa a captura de posições vencedoras
 
-        for (let i = 0; i < symbolsOnPayline.length; i++) {
-            let symbol = symbolsOnPayline[i];
-            if (symbol === this.wildSymbol || symbol === lastSymbol) {
-                count++;
-                paylineWinningPositions.push(payline[i]);
-            } else {
-                if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-                    totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-                    winningSymbols.push(...paylineWinningPositions);
-                }
-                count = 1;
-                paylineWinningPositions = [payline[i]];
-            }
-            lastSymbol = symbol;
-        }
-
-        // Verifica a última sequência
-        if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-            totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-            winningSymbols.push(...paylineWinningPositions);
-        }
-    });
-
-    // Verificação para Scatter
-    let scatterCount = reels.flat().filter(symbol => symbol === this.scatterSymbol).length;
-    if (scatterCount >= 3) {
-        totalWin += (this.paytable[this.scatterSymbol][scatterCount.toString()] || 0) * betAmount;
-        // Adicionar lógica aqui para identificar as posições dos scatters, se necessário
+  for (let i = 1; i < symbolsOnPayline.length; i++) {
+    let symbol = symbolsOnPayline[i];
+    if (symbol === lastSymbol) {
+      count++;
+      paylineWinningPositions.push(payline[i]);
+    } else {
+      if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+        totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+        winningSymbols.push(...paylineWinningPositions);
+      }
+      count = 1; // Reinicia a contagem para o novo símbolo
+      paylineWinningPositions = [payline[i]]; // Reinicia as posições vencedoras
     }
+    lastSymbol = symbol; // Atualiza o último símbolo para o atual
+  }
+
+  // Verifica a última sequência de símbolos
+  if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+    totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+    winningSymbols.push(...paylineWinningPositions);
+  }
+});
 
     return { totalWin, winningSymbols };
-}
-
-  
-  
+  }
 
   checkLineWin(line) {
     let winAmount = 0;
-    for (let i = 0; i <= line.length - 3; i++) {
+    for (let i = 0; i <= line.length - 5; i++) {
       for (let length of [3, 4, 5]) {
         if (i + length <= line.length) {
           let subLine = line.slice(i, i + length);

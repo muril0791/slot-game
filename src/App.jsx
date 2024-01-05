@@ -43,6 +43,7 @@ const App = () => {
         transformed[col][row] = results[row][col];
       }
     }
+    console.log( results, "/n", transformed)
     return transformed;
   };
 
@@ -79,7 +80,6 @@ const App = () => {
         results: transformedResults,
         betAmount: bet,
         winAmount: winResult.totalWin,
-        winningSymbols: winResult.winningSymbols, // Incluir os símbolos vencedores
         timestamp: new Date().toLocaleTimeString(),
       };
       setHistory((prevHistory) => [resultItem, ...prevHistory]); // Utilizando setHistory

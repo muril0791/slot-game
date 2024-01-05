@@ -1,9 +1,8 @@
 const paylines = [
   // Linhas horizontais
-  [[0, 0], [0, 1], [0, 2], [3, 3], [0, 4]], // Linha superior
-  [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]], // Linha do meio
-  [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]], // Linha inferior
-
+  [[1, 0], [0, 1], [0, 2], [0, 3], [0, 4]], // Linha superior
+  [[2, 0], [1, 1], [1, 2], [1, 3], [1, 4]], // Linha do meio
+  [[3, 0], [2, 1], [2, 2], [2, 3], [2, 4]], // Linha inferior
   // Linhas verticais (apenas sequências de 3)
   [[0, 0], [1, 0], [2, 0]], // Coluna 1
   [[0, 1], [1, 1], [2, 1]], // Coluna 2
