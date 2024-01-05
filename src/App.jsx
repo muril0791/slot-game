@@ -3,7 +3,7 @@ import SlotDisplay from "./Slot/SlotDisplay";
 import MenuHistory from "./menu/menu-history";
 import DebugMenu from "./debug/DebugMenu";
 import useSlotMachine from "./Slot/hook/useSlotMachine";
-import { symbols, WILD_SYMBOL, SCATTER_SYMBOL } from './assets/symbol-icon/symbols';
+import { symbols } from './assets/symbol-icon/symbols';
 import paytable from "./math/slot-pays/payTables";
 import paylines from "./math/slot-pays/payLines";
 import BetArea from "./bet-group/betArea";
@@ -15,6 +15,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [autoSpinCount, setAutoSpinCount] = useState(0);
+  const [isAutoplay, setIsAutoplay] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
   const [animationSpeed, setAnimationSpeed] = useState(1);
@@ -30,8 +31,7 @@ const App = () => {
     history,
     slotMachine,
     setHistory,
-    startAutoPlay,
-  } = useSlotMachine(100, bet, symbols, paytable, paylines, WILD_SYMBOL, SCATTER_SYMBOL);
+  } = useSlotMachine(100, bet, symbols, paytable, paylines);
 
   const transformResults = (results) => {
     const transformed = Array(5)
@@ -45,51 +45,60 @@ const App = () => {
     return transformed;
   };
 
-  const handleBetChange = (e) => {
-    const newBet = parseInt(e.target.value, 10);
-    if (!isNaN(newBet) && newBet > 0 && newBet <= balance) {
-      setBet(newBet);
-    } else {
-      setErrorMessage("Aposta inválida.");
-      showSnackbar("Aposta inválida.", "error");
-    }
-  };
-
-  const handleSpinClick = () => {
+  const executeSpin = () => {
     if (balance < bet) {
       setErrorMessage("Saldo insuficiente para girar.");
       showSnackbar("Saldo insuficiente para girar.", "error");
+      setIsAutoplay(false); // Parar o autoplay se o saldo for insuficiente
       return;
     }
-    setIsSpinning(true);
+  
     setErrorMessage("");
-    setBalance((prev) => prev - bet);
-
+    setBalance(prev => prev - bet);
+    setIsSpinning(true); // Iniciar animação de spin
+  
     setTimeout(() => {
       const newResults = slotMachine.spin();
       const transformedResults = transformResults(newResults);
       setResults(transformedResults);
       const winAmount = slotMachine.checkWin(transformedResults, bet);
       setLastWin(winAmount);
-      setBalance((prev) => prev + winAmount);
-      setIsSpinning(false);
-
+      setBalance(prev => prev + winAmount);
+  
       if (winAmount > 0) {
         showSnackbar(`Você ganhou $${winAmount}!`, "success");
       }
-
+  
       const resultItem = {
         results: transformedResults,
         betAmount: bet,
         winAmount,
         timestamp: new Date().toLocaleTimeString(),
       };
-      setHistory((prevHistory) => [resultItem, ...prevHistory]);
-    }, 725);
+      setHistory(prevHistory => [resultItem, ...prevHistory]);
+  
+      setIsSpinning(false); // Parar animação de spin
+  
+      if (isAutoplay && autoSpinCount > 0) {
+        setAutoSpinCount(prevCount => prevCount - 1);
+        if (autoSpinCount > 1) {
+          setTimeout(executeSpin, 725); // Aguardar a animação terminar antes do próximo spin
+        } else {
+          setIsAutoplay(false); // Desativa o autoplay se não houver mais spins
+        }
+      }
+    }, 725); // Tempo de duração da animação de spin
+  };
+  
+  const handleSpinClick = () => {
+    executeSpin();
   };
 
-  const handleAutoPlayStart = () => {
-    startAutoPlay(autoSpinCount);
+  const startAutoPlay = () => {
+    if (!isAutoplay && autoSpinCount > 0) {
+      setIsAutoplay(true);
+      executeSpin();
+    }
   };
 
   const toggleMenu = () => {
@@ -141,24 +150,23 @@ const App = () => {
               bet={bet}
               setBet={setBet}
               handleSpinClick={handleSpinClick}
-              handleAutoPlayStart={handleAutoPlayStart}
-              handleBetChange={handleBetChange}
+              handleAutoPlayStart={startAutoPlay}
+              handleBetChange={(e) => setBet(parseInt(e.target.value, 10))}
               balance={balance}
               autoSpinCount={autoSpinCount}
               setAutoSpinCount={setAutoSpinCount}
               isSpinning={isSpinning}
-            >
-              {snackbarMessage && (
-                <Snackbar message={snackbarMessage} type={snackbarType} />
-              )}
-            </BetArea>
-            <div className="info-bet">
-              <div >Saldo: <span className="balance-display">${balance}</span> </div>
-              {errorMessage && (
-                <div className="error-message">{errorMessage}</div>
-              )}
-              <div >Última Vitória: <span className="last-win-display">${lastWin}</span> </div>
-            </div>
+            />
+            {snackbarMessage && (
+              <Snackbar message={snackbarMessage} type={snackbarType} />
+            )}
+          </div>
+          <div className="info-bet">
+            <div>Saldo: <span className="balance-display">${balance}</span></div>
+            {errorMessage && (
+              <div className="error-message">{errorMessage}</div>
+            )}
+            <div>Última Vitória: <span className="last-win-display">${lastWin}</span></div>
           </div>
         </main>
       </div>

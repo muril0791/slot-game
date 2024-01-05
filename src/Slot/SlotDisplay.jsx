@@ -45,7 +45,10 @@ class SlotDisplay extends Component {
 
       for (let j = 0; j < 3; j++) {
         const symbolText = new PIXI.Text(
-          this.props.results[i][j], // Ajustado para acessar os resultados corretamente
+          this.props.symbols[
+            Math.floor(Math.random() * this.props.symbols.length)
+          ],
+ // Ajustado para acessar os resultados corretamente
           {
             fontFamily: "Arial",
             fontSize: 88,

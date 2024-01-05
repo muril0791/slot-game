@@ -27,9 +27,9 @@ const BetArea = ({ bet, setBet, handleSpinClick, handleAutoPlayStart, handleBetC
         value={autoSpinCount}
         onChange={(e) => setAutoSpinCount(parseInt(e.target.value, 10))}
         min="1"
-        disabled={isSpinning}
+        disabled /*disabled={isSpinning} */
       />
-      <button onClick={handleAutoPlayStart} disabled>
+      <button onClick={handleAutoPlayStart} disabled /*disabled={isSpinning} */>
         AutoPlay
       </button>
     </div>
