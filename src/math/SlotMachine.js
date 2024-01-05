@@ -82,26 +82,17 @@ class SlotMachine {
   //   return grid;
   // }
 
-  checkWin(reels, betAmount) {
+   checkWin(reels, betAmount) {
     let totalWin = 0;
 
+    // Verificação das linhas de pagamento regulares com suporte a Wild
     this.paylines.forEach((payline) => {
-      let symbolsOnPayline = payline.map((position) => {
-        // Verifica se a posição é um array e tem os índices corretos
-        if (Array.isArray(position) && position.length === 2) {
-          const [rowIndex, colIndex] = position;
-          if (rowIndex >= 0 && rowIndex < this.rows && colIndex >= 0 && colIndex < this.columns) {
-            return reels[rowIndex][colIndex];
-          }
-        }
-        return null;
-      });
-
+      let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
       let count = 1;
       let lastSymbol = null;
 
       for (let symbol of symbolsOnPayline) {
-        if (symbol === lastSymbol || (lastSymbol === null && symbol !== null)) {
+        if (symbol === this.wildSymbol || symbol === lastSymbol) {
           count++;
         } else {
           if (lastSymbol && this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
@@ -118,8 +109,16 @@ class SlotMachine {
       }
     });
 
+    // Verificação para Scatter
+    let scatterCount = reels.flat().filter(symbol => symbol === this.scatterSymbol).length;
+    if (scatterCount >= 3) {
+      totalWin += (this.paytable[this.scatterSymbol][scatterCount.toString()] || 0) * betAmount;
+    }
+
     return totalWin;
   }
+
+  
   
 
   checkLineWin(line) {

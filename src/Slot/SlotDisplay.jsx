@@ -29,38 +29,6 @@ class SlotDisplay extends Component {
       this.updateSymbols();
     }
   }
-
-  // createSlotMachine() {
-  //   const { width, height } = this.app.renderer;
-  //   const margin = 20;
-  //   const columnWidth = (width - margin * (5 + 1)) / 5;
-  //   this.rowHeight = (height - margin * (3 + 1)) / 3;
-
-  //   for (let i = 0; i < 5; i++) {
-  //     const column = new PIXI.Container();
-  //     column.x = margin + i * (columnWidth + margin);
-  //     this.app.stage.addChild(column);
-  //     this.columns.push(column);
-
-  //     for (let j = 0; j < 3; j++) {
-  //       const symbolText = new PIXI.Text(
-  //         this.props.symbols[
-  //           Math.floor(Math.random() * this.props.symbols.length)
-  //         ],
-  //         {
-  //           fontFamily: "Arial",
-  //           fontSize: 48,
-  //           fill: 0xffffff,
-  //           align: "center",
-  //         }
-  //       );
-  //       symbolText.anchor.set(0.5);
-  //       symbolText.x = columnWidth / 2;
-  //       symbolText.y = j * this.rowHeight + this.rowHeight / 2;
-  //       column.addChild(symbolText);
-  //     }
-  //   }
-  // }
   createSlotMachine() {
     const { width, height } = this.app.renderer;
     const margin = 20;
@@ -77,9 +45,7 @@ class SlotDisplay extends Component {
 
       for (let j = 0; j < 3; j++) {
         const symbolText = new PIXI.Text(
-          this.props.symbols[
-            Math.floor(Math.random() * this.props.symbols.length)
-          ],
+          this.props.results[i][j], // Ajustado para acessar os resultados corretamente
           {
             fontFamily: "Arial",
             fontSize: 88,
@@ -96,9 +62,11 @@ class SlotDisplay extends Component {
   }
 
   startSpinning() {
+    const { animationSpeed } = this.props;
     this.spinning = true;
-    const spinSpeed = 15;
+    const spinSpeed = 15 * animationSpeed;
     const spinCount = 7; // Número de voltas completas antes de parar
+    this.spinning = true;
 
     this.columns.forEach((column) => {
       let currentSpin = 0;

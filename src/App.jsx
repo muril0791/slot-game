@@ -3,7 +3,7 @@ import SlotDisplay from "./Slot/SlotDisplay";
 import MenuHistory from "./menu/menu-history";
 import DebugMenu from "./debug/DebugMenu";
 import useSlotMachine from "./Slot/hook/useSlotMachine";
-import symbols from "./assets/symbol-icon/symbols";
+import { symbols, WILD_SYMBOL, SCATTER_SYMBOL } from './assets/symbol-icon/symbols';
 import paytable from "./math/slot-pays/payTables";
 import paylines from "./math/slot-pays/payLines";
 import BetArea from "./bet-group/betArea";
@@ -17,6 +17,7 @@ const App = () => {
   const [autoSpinCount, setAutoSpinCount] = useState(0);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarType, setSnackbarType] = useState("");
+  const [animationSpeed, setAnimationSpeed] = useState(1);
   const {
     balance,
     setBalance,
@@ -30,7 +31,7 @@ const App = () => {
     slotMachine,
     setHistory,
     startAutoPlay,
-  } = useSlotMachine(100, bet, symbols, paytable, paylines, "WILD", "SCATTER");
+  } = useSlotMachine(100, bet, symbols, paytable, paylines, WILD_SYMBOL, SCATTER_SYMBOL);
 
   const transformResults = (results) => {
     const transformed = Array(5)
@@ -112,6 +113,9 @@ const App = () => {
         {isMenuOpen && <MenuHistory history={history} />}
         <DebugMenu
           addFunds={(amount) => setBalance((prev) => prev + amount)}
+          removeFunds={(amount) => setBalance((prev) => prev - amount)}
+          gameState={{ balance, lastWin, isSpinning }}
+          setAnimationSpeed={setAnimationSpeed}
           forceWin={() => {
             const winAmount = 50;
             setResults(slotMachine.spin(true));
@@ -122,7 +126,6 @@ const App = () => {
             setResults(slotMachine.spin(false));
             setLastWin(0);
           }}
-          removeFunds={(amount) => setBalance((prev) => prev - amount)}
         />
       </div>
       <div className="App">
@@ -131,6 +134,7 @@ const App = () => {
             results={results}
             isSpinning={isSpinning}
             symbols={symbols}
+            animationSpeed={animationSpeed}
           />
           <div className="controls">
             <BetArea
