@@ -129,10 +129,11 @@ class SlotDisplay extends Component {
   updateSymbols() {
     const newResults = this.props.results;
 
+    // Verifica se os novos resultados estão na estrutura correta
     if (
       !newResults ||
-      newResults.length !== 5 ||
-      newResults.some((column) => !column || column.length !== 3)
+      newResults.length !== 3 ||
+      newResults.some((row) => row.length !== 5)
     ) {
       console.error(
         "newResults is undefined or not in the correct structure",
@@ -141,10 +142,12 @@ class SlotDisplay extends Component {
       return;
     }
 
-    this.columns.forEach((column, columnIndex) => {
-      column.removeChildren();
+    // Atualiza cada coluna com os novos símbolos
+    for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
+      this.columns[columnIndex].removeChildren();
 
-      newResults[columnIndex].forEach((symbol, rowIndex) => {
+      for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+        const symbol = newResults[rowIndex][columnIndex];
         const symbolText = new PIXI.Text(symbol, {
           fontFamily: "Arial",
           fontSize: 88,
@@ -154,9 +157,9 @@ class SlotDisplay extends Component {
         symbolText.anchor.set(0.5);
         symbolText.x = 136 / 2;
         symbolText.y = rowIndex * this.rowHeight + this.rowHeight / 2;
-        column.addChild(symbolText);
-      });
-    });
+        this.columns[columnIndex].addChild(symbolText);
+      }
+    }
   }
 
   componentWillUnmount() {

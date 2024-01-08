@@ -71,6 +71,7 @@ class SlotMachine {
     }
 
     fillRemainingSymbols();
+    console.log(grid, " grid");
     return grid;
   }
   spin() {
@@ -80,41 +81,85 @@ class SlotMachine {
     return this.symbols[Math.floor(Math.random() * this.symbols.length)];
   }
 
+  // checkWin(reels, betAmount) {
+  //   let totalWin = 0;
+  //   let winningSymbols = [];
+
+  //   this.paylines.forEach((payline) => {
+  //     let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
+  //     let count = 1;
+  //     let lastSymbol = symbolsOnPayline[0];
+  //     let paylineWinningPositions = [payline[0]];
+  //     for (let i = 1; i < symbolsOnPayline.length; i++) {
+  //       let symbol = symbolsOnPayline[i];
+  //       if (symbol === lastSymbol) {
+  //         count++;
+  //         paylineWinningPositions.push(payline[i]);
+  //       } else {
+  //         if (
+  //           this.paytable[lastSymbol] &&
+  //           this.paytable[lastSymbol][count.toString()]
+  //         ) {
+  //           totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+  //           winningSymbols.push(...paylineWinningPositions);
+  //         }
+  //         count = 1;
+  //         paylineWinningPositions = [payline[i]];
+  //       }
+  //       lastSymbol = symbol;
+  //     }
+
+  //     // Verifica a última sequência de símbolos
+  //     if (
+  //       this.paytable[lastSymbol] &&
+  //       this.paytable[lastSymbol][count.toString()]
+  //     ) {
+  //       totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+  //       winningSymbols.push(...paylineWinningPositions);
+  //     }
+  //   });
+  //   return { totalWin, winningSymbols };
+  // }
+
   checkWin(reels, betAmount) {
     let totalWin = 0;
-    let winningSymbols = [];
-
+    let winningSymbols = []; // Vamos usar isso para armazenar os símbolos vencedores
+    let winningPositions = []; // Vamos usar isso para armazenar as posições vencedoras
+  
     this.paylines.forEach((payline) => {
-  let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
-  let count = 1; // Inicia a contagem como 1 porque já temos um símbolo inicial
-  let lastSymbol = symbolsOnPayline[0]; // O último símbolo começa com o primeiro símbolo da payline
-  let paylineWinningPositions = [payline[0]]; // Começa a captura de posições vencedoras
-
-  for (let i = 1; i < symbolsOnPayline.length; i++) {
-    let symbol = symbolsOnPayline[i];
-    if (symbol === lastSymbol) {
-      count++;
-      paylineWinningPositions.push(payline[i]);
-    } else {
+      let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
+      let count = 1;
+      let lastSymbol = symbolsOnPayline[0];
+      let paylineWinningPositions = [payline[0]];
+  
+      for (let i = 1; i < symbolsOnPayline.length; i++) {
+        let symbol = symbolsOnPayline[i];
+        if (symbol === lastSymbol) {
+          count++;
+          paylineWinningPositions.push(payline[i]);
+        } else {
+          if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+            totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
+            winningSymbols.push(lastSymbol); // Guarda o símbolo vencedor
+            winningPositions = winningPositions.concat(paylineWinningPositions); // Guarda as posições vencedoras
+          }
+          count = 1; // Reseta a contagem para o novo símbolo
+          paylineWinningPositions = [payline[i]]; // Inicia uma nova coleta de posições para o próximo símbolo
+        }
+        lastSymbol = symbol; // Atualiza o último símbolo visto
+      }
+  
+      // Verifica a última sequência de símbolos
       if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
         totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-        winningSymbols.push(...paylineWinningPositions);
+        winningSymbols.push(lastSymbol); // Guarda o símbolo vencedor
+        winningPositions = winningPositions.concat(paylineWinningPositions); // Guarda as posições vencedoras
       }
-      count = 1; // Reinicia a contagem para o novo símbolo
-      paylineWinningPositions = [payline[i]]; // Reinicia as posições vencedoras
-    }
-    lastSymbol = symbol; // Atualiza o último símbolo para o atual
+    });
+  
+    return { totalWin, winningSymbols, winningPositions };
   }
-
-  // Verifica a última sequência de símbolos
-  if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
-    totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-    winningSymbols.push(...paylineWinningPositions);
-  }
-});
-
-    return { totalWin, winningSymbols };
-  }
+  
 
   checkLineWin(line) {
     let winAmount = 0;
