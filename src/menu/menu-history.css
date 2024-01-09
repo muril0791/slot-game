@@ -18,7 +18,8 @@
   background-color: #000;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-  background: linear-gradient(to bottom, #ff8f26, #ff5858);
+  background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(12,99,82,1) 0%, rgba(5,31,29,1) 47%, rgba(12,98,14,1) 100%, rgba(13,101,13,1) 100%);
   transition: transform 0.2s ease; 
 }
 .history-menu {
