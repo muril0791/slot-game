@@ -6,8 +6,7 @@
   background-color: #000;
   border-radius: 10px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
-  background: #333333; 
-  background: -webkit-linear-gradient(to right, #333333, #dd1818);
-  background: linear-gradient(to right, #333333, #dd1818);
+  background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(12,99,82,1) 0%, rgba(5,31,29,1) 47%, rgba(12,98,14,1) 100%, rgba(13,101,13,1) 100%);
 }
 

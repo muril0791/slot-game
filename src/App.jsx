@@ -33,7 +33,18 @@ const App = () => {
     slotMachine,
     setHistory,
   } = useSlotMachine(100, bet, symbols, paytable, paylines);
-
+  const transformResults = (results) => {
+    const transformed = Array(5)
+      .fill()
+      .map(() => Array(3));
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 5; col++) {
+        transformed[col][row] = results[row][col];
+      }
+    }
+    console.log(results, "/n", transformed);
+    return transformed;
+  };
   const executeSpin = () => {
     if (balance < bet) {
       setErrorMessage("Saldo insuficiente para girar.");
@@ -48,6 +59,7 @@ const App = () => {
 
     setTimeout(() => {
       const newResults = slotMachine.spin();
+      const transformedResults = transformResults(newResults);
       setResults(newResults);
 
       const winResult = slotMachine.checkWin(newResults, bet);
@@ -63,7 +75,7 @@ const App = () => {
       }
       console.log(newResults);
       const resultItem = {
-        results: newResults,
+        results: transformedResults,
         betAmount: bet,
         winAmount: winResult.totalWin,
         timestamp: new Date().toLocaleTimeString(),
