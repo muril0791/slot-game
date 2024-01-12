@@ -11,21 +11,12 @@ const MenuHistory = ({ history }) => {
           <div key={index} className="history-results">
             <div className="history-order-number"> Nº {index + 1}</div>{" "}
             <div className="divider"></div>
-            {/* Número de ordem */}
             <div className="history-details">
               <div>Aposta: ${item.betAmount}</div>
               <div>Ganho: ${item.winAmount}</div>
+              <div>Ganho Liquido: ${item.betAmount - item.winAmount}</div>
               <div>Hora: {item.timestamp}</div>
             </div>
-            {/* <div className="winning-symbols">
-              Símbolos Vencedores:{" "}
-              {item.winningSymbols &&
-                item.winningSymbols.map((symbol, i) => (
-                  <span key={i} className="winning-symbol">
-                    {symbol.join(", ")}
-                  </span> // Exibindo símbolos vencedores
-                ))}
-            </div> */}
             <div className="history-item">
               {item.results.map((column, columnIndex) => (
                 <div key={columnIndex} className="history-row">

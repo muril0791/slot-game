@@ -96,7 +96,7 @@ class SlotDisplay extends Component {
     const { animationSpeed } = this.props;
     this.spinning = true;
     const spinSpeed = 15 * animationSpeed;
-    const spinCount = 7; // Número de voltas completas antes de parar
+    const spinCount = 7; 
     this.spinning = true;
 
     this.columns.forEach((column) => {
@@ -113,7 +113,7 @@ class SlotDisplay extends Component {
           requestAnimationFrame(spinAnimation);
         } else {
           this.spinning = false;
-          this.resetSymbolPositions(column); // Reposiciona os símbolos
+          this.resetSymbolPositions(column); 
         }
       };
       requestAnimationFrame(spinAnimation);
@@ -128,8 +128,6 @@ class SlotDisplay extends Component {
 
   updateSymbols() {
     const newResults = this.props.results;
-
-    // Verifica se os novos resultados estão na estrutura correta
     if (
       !newResults ||
       newResults.length !== 3 ||

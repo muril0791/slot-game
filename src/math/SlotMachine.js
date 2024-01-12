@@ -34,11 +34,9 @@ class SlotMachine {
     };
 
     if (random < 0.3) {
-      // 0.3% chance - Todas as posições com o mesmo ícone
       const symbol = this.getRandomSymbol();
       grid = grid.map((row) => row.map(() => symbol));
     } else if (random < 2) {
-      // 5.7% chance - Uma coluna e uma linha com o mesmo ícone
       const symbol = this.getRandomSymbol();
       const randomRow = Math.floor(Math.random() * this.rows);
       const randomColumn = Math.floor(Math.random() * this.columns);
@@ -46,27 +44,22 @@ class SlotMachine {
       grid[randomRow].fill(symbol);
       grid.forEach((row) => (row[randomColumn] = symbol));
     } else if (random < 5) {
-      // 14% chance - Uma linha inteira com o mesmo ícone
       const symbol = this.getRandomSymbol();
       const randomRow = Math.floor(Math.random() * this.rows);
       grid[randomRow].fill(symbol);
     } else if (random < 8) {
-      // 16% chance - Uma coluna inteira com o mesmo ícone
       const symbol = this.getRandomSymbol();
       const randomColumn = Math.floor(Math.random() * this.columns);
       grid.forEach((row) => (row[randomColumn] = symbol));
     } else if (random < 11) {
-      // 25% chance - Quatro ícones na linha
       const symbol = this.getRandomSymbol();
       const randomRow = Math.floor(Math.random() * this.rows);
       grid[randomRow].fill(symbol, 0, 4);
     } else if (random < 22) {
-      // 36% chance - Três ícones na linha
       const symbol = this.getRandomSymbol();
       const randomRow = Math.floor(Math.random() * this.rows);
       grid[randomRow].fill(symbol, 0, 3);
     } else {
-      // 3% chance - Nenhuma combinação vencedora
       grid = grid.map((row) => row.map(() => this.getRandomSymbol()));
     }
 
@@ -123,43 +116,44 @@ class SlotMachine {
 
   checkWin(reels, betAmount) {
     let totalWin = 0;
-    let winningSymbols = []; // Vamos usar isso para armazenar os símbolos vencedores
-    let winningPositions = []; // Vamos usar isso para armazenar as posições vencedoras
-  
+    let winningSymbols = [];
+
     this.paylines.forEach((payline) => {
       let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
       let count = 1;
       let lastSymbol = symbolsOnPayline[0];
       let paylineWinningPositions = [payline[0]];
-  
+
       for (let i = 1; i < symbolsOnPayline.length; i++) {
         let symbol = symbolsOnPayline[i];
         if (symbol === lastSymbol) {
           count++;
           paylineWinningPositions.push(payline[i]);
         } else {
-          if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+          if (
+            this.paytable[lastSymbol] &&
+            this.paytable[lastSymbol][count.toString()]
+          ) {
             totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-            winningSymbols.push(lastSymbol); // Guarda o símbolo vencedor
-            winningPositions = winningPositions.concat(paylineWinningPositions); // Guarda as posições vencedoras
+            winningSymbols.push(...paylineWinningPositions);
           }
-          count = 1; // Reseta a contagem para o novo símbolo
-          paylineWinningPositions = [payline[i]]; // Inicia uma nova coleta de posições para o próximo símbolo
+          count = 1;
+          paylineWinningPositions = [payline[i]];
         }
-        lastSymbol = symbol; // Atualiza o último símbolo visto
+        lastSymbol = symbol;
       }
-  
-      // Verifica a última sequência de símbolos
-      if (this.paytable[lastSymbol] && this.paytable[lastSymbol][count.toString()]) {
+
+      if (
+        this.paytable[lastSymbol] &&
+        this.paytable[lastSymbol][count.toString()]
+      ) {
         totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-        winningSymbols.push(lastSymbol); // Guarda o símbolo vencedor
-        winningPositions = winningPositions.concat(paylineWinningPositions); // Guarda as posições vencedoras
+        winningSymbols.push(...paylineWinningPositions);
       }
     });
-  
-    return { totalWin, winningSymbols, winningPositions };
+
+    return { totalWin, winningSymbols };
   }
-  
 
   checkLineWin(line) {
     let winAmount = 0;
