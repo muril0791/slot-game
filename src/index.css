@@ -12,3 +12,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+/* Garanta que html/body ocupem 100% e não mostrem scroll */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Arial", sans-serif;
+}
+
+/* Se você usa #root, também force 100% nele */
+#root {
+  width: 100%;
+  height: 100%;
+}

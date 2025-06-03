@@ -1,5 +1,7 @@
-import { useState } from "react";
-import SlotMachineClass from "../../math/SlotMachine"; // Ajuste o caminho conforme necessário
+// src/Slot/hook/useSlotMachine.jsx
+
+import { useState, useRef } from "react";
+import SlotMachineClass from "../../math/SlotMachine";
 
 const useSlotMachine = (
   initialBalance,
@@ -7,25 +9,28 @@ const useSlotMachine = (
   symbols,
   paytable,
   paylines,
-  wildSymbol,
-  scatterSymbol
+  wildSymbol = null,
+  scatterSymbol = null
 ) => {
   const [balance, setBalance] = useState(initialBalance);
   const [lastWin, setLastWin] = useState(0);
-  const [results, setResults] = useState(
-    Array(3).fill(Array(5).fill(symbols[0]))
+  const initialGrid = Array.from({ length: 3 }, () =>
+    Array.from({ length: 5 }, () => symbols[0])
   );
+  const [results, setResults] = useState(initialGrid);
   const [isSpinning, setIsSpinning] = useState(false);
   const [history, setHistory] = useState([]);
   const [autoSpinsLeft, setAutoSpinsLeft] = useState(0);
-  const slotMachine = new SlotMachineClass(
-    symbols,
-    paytable,
-    paylines,
-    wildSymbol,
-    scatterSymbol
-  );
-
+  const slotMachineRef = useRef(null);
+  if (!slotMachineRef.current) {
+    slotMachineRef.current = new SlotMachineClass(
+      symbols,
+      paytable,
+      paylines,
+      wildSymbol,
+      scatterSymbol
+    );
+  }
   const startAutoPlay = (numSpins) => {
     setAutoSpinsLeft(numSpins);
   };
@@ -33,16 +38,16 @@ const useSlotMachine = (
     balance,
     setBalance,
     lastWin,
-    results,
     setLastWin,
+    results,
     setResults,
     isSpinning,
     setIsSpinning,
     history,
-    slotMachine,
     setHistory,
-    startAutoPlay,
+    slotMachineRef,
     autoSpinsLeft,
+    startAutoPlay,
   };
 };
 

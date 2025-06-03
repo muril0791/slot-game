@@ -1,28 +1,38 @@
+/* Snackbar.css */
+
+/* Container da notificação (invisível por padrão) */
 .snackbar {
-    visibility: hidden; /* Escondido por padrão */
-    min-width: 250px;
-    background-color: #db1d1d; /* Cor padrão */
-    color: white;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 1;
-    left: 50%;
-    top: 30px;
-    transform: translateX(-50%);
-    transition: visibility 0.5s, background-color 0.5s;
-  }
-  
-  .snackbar.show {
-    visibility: visible; /* Mostra o Snackbar */
-  }
-  
-  .snackbar.success {
-    background-color: #4CAF50; /* Verde para sucesso */
-  }
-  
-  .snackbar.error {
-    background-color: #f44336; /* Vermelho para erro */
-  }
-  
+  visibility: hidden;
+  min-width: 250px;
+  max-width: 90%;
+  background-color: #e53935; /* vermelho padrão */
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 16px;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  font-size: 1rem;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* Exibe o snackbar */
+.snackbar.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Sucesso (verde) */
+.snackbar.success {
+  background-color: #4caf50;
+}
+
+/* Erro (vermelho) */
+.snackbar.error {
+  background-color: #e53935;
+}

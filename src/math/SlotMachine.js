@@ -1,195 +1,142 @@
+// src/math/SlotMachine.js
+
 class SlotMachine {
-  constructor(
-    symbols,
-    paytable,
-    paylines,
-    wildSymbol,
-    scatterSymbol,
-    rows = 3,
-    columns = 5
-  ) {
-    this.symbols = symbols;
-    this.paytable = paytable;
-    this.paylines = paylines;
-    this.wildSymbol = wildSymbol;
-    this.scatterSymbol = scatterSymbol;
+  constructor(symbols, paytable, paylines, wildSymbol = null, scatterSymbol = null, rows = 3, columns = 5) {
+    this.symbols = symbols;       // ex.: ["cherries","lemon","bell",...]
+    this.paytable = paytable;     // objeto importado de payTables.js
+    this.paylines = paylines;     // array de payLines
+    this.wildSymbol = wildSymbol; // se tiver curinga
+    this.scatterSymbol = scatterSymbol; // se tiver scatter
     this.rows = rows;
     this.columns = columns;
   }
 
-  generateSpinResult() {
-    const random = Math.random() * 100;
-    let grid = Array(this.rows)
-      .fill()
-      .map(() => Array(this.columns).fill(null));
+  // Gera um resultado aleatório (grid 3×5) de strings (nomes de símbolos)
+  // A lógica a seguir tem probabilidade de padrões especiais (jackpot)
+  generateSpinResult(forceFlag = null) {
+    // Exemplo de “forçar vitória”: se forceFlag === true, preenche tudo com “jackpot”
+    if (forceFlag === true) {
+      return Array.from({ length: this.rows }, () =>
+        Array.from({ length: this.columns }, () => "jackpot")
+      );
+    }
+    // Se for “forceFlag === false”, retorna completamente aleatório sem chance de jackpot
+    if (forceFlag === false) {
+      return Array.from({ length: this.rows }, () =>
+        Array.from({ length: this.columns }, () => this.getRandomSymbol())
+      );
+    }
 
-    const fillRemainingSymbols = () => {
-      for (let row = 0; row < this.rows; row++) {
-        for (let col = 0; col < this.columns; col++) {
-          if (!grid[row][col]) {
-            grid[row][col] = this.getRandomSymbol();
+    // Lógica normal: usada probabilidade para jackpot completo, linha cheia, etc.
+    const random = Math.random() * 100;
+    let grid = Array.from({ length: this.rows }, () =>
+      Array(this.columns).fill(null)
+    );
+
+    const fillRemaining = () => {
+      for (let r = 0; r < this.rows; r++) {
+        for (let c = 0; c < this.columns; c++) {
+          if (!grid[r][c]) {
+            grid[r][c] = this.getRandomSymbol();
           }
         }
       }
     };
 
-    if (random < 0.3) {
-      const symbol = this.getRandomSymbol();
+    if (random < 0.5) {
+      // Jackpot completo (0.5% de chance)
+      const symbol = "jackpot";
       grid = grid.map((row) => row.map(() => symbol));
     } else if (random < 2) {
+      // Linha e coluna cheia com o mesmo símbolo
       const symbol = this.getRandomSymbol();
-      const randomRow = Math.floor(Math.random() * this.rows);
-      const randomColumn = Math.floor(Math.random() * this.columns);
-
-      grid[randomRow].fill(symbol);
-      grid.forEach((row) => (row[randomColumn] = symbol));
+      const randRow = Math.floor(Math.random() * this.rows);
+      const randCol = Math.floor(Math.random() * this.columns);
+      grid[randRow].fill(symbol);
+      grid.forEach((row) => (row[randCol] = symbol));
     } else if (random < 5) {
+      // Linha cheia (3 colunas)
       const symbol = this.getRandomSymbol();
-      const randomRow = Math.floor(Math.random() * this.rows);
-      grid[randomRow].fill(symbol);
+      const randRow = Math.floor(Math.random() * this.rows);
+      grid[randRow].fill(symbol);
     } else if (random < 8) {
+      // Coluna cheia
       const symbol = this.getRandomSymbol();
-      const randomColumn = Math.floor(Math.random() * this.columns);
-      grid.forEach((row) => (row[randomColumn] = symbol));
-    } else if (random < 11) {
+      const randCol = Math.floor(Math.random() * this.columns);
+      grid.forEach((row) => (row[randCol] = symbol));
+    } else if (random < 12) {
+      // 4 símbolos na mesma linha
       const symbol = this.getRandomSymbol();
-      const randomRow = Math.floor(Math.random() * this.rows);
-      grid[randomRow].fill(symbol, 0, 4);
+      const randRow = Math.floor(Math.random() * this.rows);
+      grid[randRow].fill(symbol, 0, 4);
     } else if (random < 22) {
+      // 3 símbolos na mesma linha
       const symbol = this.getRandomSymbol();
-      const randomRow = Math.floor(Math.random() * this.rows);
-      grid[randomRow].fill(symbol, 0, 3);
+      const randRow = Math.floor(Math.random() * this.rows);
+      grid[randRow].fill(symbol, 0, 3);
     } else {
-      grid = grid.map((row) => row.map(() => this.getRandomSymbol()));
+      // 100% aleatório
+      grid = grid.map((row) =>
+        row.map(() => this.getRandomSymbol())
+      );
     }
 
-    fillRemainingSymbols();
-    console.log(grid, " grid");
+    fillRemaining();
     return grid;
   }
-  spin() {
-    return this.generateSpinResult();
+
+  spin(forceFlag = null) {
+    return this.generateSpinResult(forceFlag);
   }
+
   getRandomSymbol() {
+    // Retorna um nome de símbolo aleatório do array this.symbols
     return this.symbols[Math.floor(Math.random() * this.symbols.length)];
   }
 
-  // checkWin(reels, betAmount) {
-  //   let totalWin = 0;
-  //   let winningSymbols = [];
-
-  //   this.paylines.forEach((payline) => {
-  //     let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
-  //     let count = 1;
-  //     let lastSymbol = symbolsOnPayline[0];
-  //     let paylineWinningPositions = [payline[0]];
-  //     for (let i = 1; i < symbolsOnPayline.length; i++) {
-  //       let symbol = symbolsOnPayline[i];
-  //       if (symbol === lastSymbol) {
-  //         count++;
-  //         paylineWinningPositions.push(payline[i]);
-  //       } else {
-  //         if (
-  //           this.paytable[lastSymbol] &&
-  //           this.paytable[lastSymbol][count.toString()]
-  //         ) {
-  //           totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-  //           winningSymbols.push(...paylineWinningPositions);
-  //         }
-  //         count = 1;
-  //         paylineWinningPositions = [payline[i]];
-  //       }
-  //       lastSymbol = symbol;
-  //     }
-
-  //     // Verifica a última sequência de símbolos
-  //     if (
-  //       this.paytable[lastSymbol] &&
-  //       this.paytable[lastSymbol][count.toString()]
-  //     ) {
-  //       totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-  //       winningSymbols.push(...paylineWinningPositions);
-  //     }
-  //   });
-  //   return { totalWin, winningSymbols };
-  // }
-
+  // Verifica combinações vencedoras em cada payline
   checkWin(reels, betAmount) {
     let totalWin = 0;
     let winningSymbols = [];
 
     this.paylines.forEach((payline) => {
-      let symbolsOnPayline = payline.map(([row, col]) => reels[row][col]);
+      // Extrai os símbolos na payline: array de strings
+      const symbolsOnLine = payline.map(([row, col]) => reels[row][col]);
       let count = 1;
-      let lastSymbol = symbolsOnPayline[0];
-      let paylineWinningPositions = [payline[0]];
+      let lastSymbol = symbolsOnLine[0];
+      let positions = [payline[0]];
 
-      for (let i = 1; i < symbolsOnPayline.length; i++) {
-        let symbol = symbolsOnPayline[i];
+      for (let i = 1; i < symbolsOnLine.length; i++) {
+        const symbol = symbolsOnLine[i];
         if (symbol === lastSymbol) {
           count++;
-          paylineWinningPositions.push(payline[i]);
+          positions.push(payline[i]);
         } else {
+          // Se existe entrada em this.paytable[lastSymbol][count]
           if (
             this.paytable[lastSymbol] &&
-            this.paytable[lastSymbol][count.toString()]
+            this.paytable[lastSymbol][count]
           ) {
-            totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-            winningSymbols.push(...paylineWinningPositions);
+            totalWin += this.paytable[lastSymbol][count] * betAmount;
+            winningSymbols.push(...positions);
           }
           count = 1;
-          paylineWinningPositions = [payline[i]];
+          positions = [payline[i]];
         }
         lastSymbol = symbol;
       }
 
+      // Última sequência
       if (
         this.paytable[lastSymbol] &&
-        this.paytable[lastSymbol][count.toString()]
+        this.paytable[lastSymbol][count]
       ) {
-        totalWin += this.paytable[lastSymbol][count.toString()] * betAmount;
-        winningSymbols.push(...paylineWinningPositions);
+        totalWin += this.paytable[lastSymbol][count] * betAmount;
+        winningSymbols.push(...positions);
       }
     });
 
     return { totalWin, winningSymbols };
-  }
-
-  checkLineWin(line) {
-    let winAmount = 0;
-    for (let i = 0; i <= line.length - 5; i++) {
-      for (let length of [3, 4, 5]) {
-        if (i + length <= line.length) {
-          let subLine = line.slice(i, i + length);
-          let pattern = this.createPattern(subLine);
-          if (pattern in this.paytable) {
-            let outcome = this.paytable[pattern];
-            winAmount += outcome.win ? outcome.win : 0;
-            break;
-          }
-        }
-      }
-    }
-    return winAmount;
-  }
-
-  createPattern(line) {
-    let wildCount = line.filter((symbol) => symbol === this.wildSymbol).length;
-    let scatterCount = line.filter(
-      (symbol) => symbol === this.scatterSymbol
-    ).length;
-
-    if (scatterCount > 0) {
-      return "SCATTER";
-    } else if (wildCount === line.length) {
-      return "WILD";
-    } else if (wildCount > 0) {
-      return line
-        .map((symbol) => (symbol === this.wildSymbol ? "WILD" : symbol))
-        .join("");
-    } else {
-      return line.join("");
-    }
   }
 }
 

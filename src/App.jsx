@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/App.jsx
+import React, { useState, useEffect } from "react";
 import SlotDisplay from "./Slot/SlotDisplay";
 import MenuHistory from "./menu/menu-history";
 import DebugMenu from "./debug/DebugMenu";
@@ -20,6 +21,7 @@ const App = () => {
   const [snackbarType, setSnackbarType] = useState("");
   const [animationSpeed, setAnimationSpeed] = useState(1);
   const [winningSymbols, setWinningSymbols] = useState([]);
+
   const {
     balance,
     setBalance,
@@ -30,84 +32,26 @@ const App = () => {
     isSpinning,
     setIsSpinning,
     history,
-    slotMachine,
+    slotMachineRef,
     setHistory,
   } = useSlotMachine(100, bet, symbols, paytable, paylines);
-  const transformResults = (results) => {
-    const transformed = Array(5)
-      .fill()
-      .map(() => Array(3));
+
+  useEffect(() => {
+    if (balance <= 0) {
+      setBet(1);
+    } else if (bet > balance) {
+      setBet(balance);
+    }
+  }, [balance, bet]);
+
+  const transformResults = (grid) => {
+    const transformed = Array.from({ length: 5 }, () => Array(3).fill(null));
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 5; col++) {
-        transformed[col][row] = results[row][col];
+        transformed[col][row] = grid[row][col];
       }
     }
-    console.log(results, "/n", transformed);
     return transformed;
-  };
-  const executeSpin = () => {
-    if (balance < bet) {
-      setErrorMessage("Saldo insuficiente para girar.");
-      showSnackbar("Saldo insuficiente para girar.", "error");
-      setIsAutoplay(false);
-      return;
-    }
-
-    setErrorMessage("");
-    setBalance((prev) => prev - bet);
-    setIsSpinning(true);
-
-    setTimeout(() => {
-      const newResults = slotMachine.spin();
-      const transformedResults = transformResults(newResults);
-      setResults(newResults);
-
-      const winResult = slotMachine.checkWin(newResults, bet);
-      setLastWin(winResult.totalWin);
-      setBalance((prev) => prev + winResult.totalWin);
-
-      if (winResult.totalWin > 0) {
-        showSnackbar(`Você ganhou $${winResult.totalWin}!`, "success");
-        console.log("Símbolos vencedores: ", winResult.winningSymbols);
-        setWinningSymbols(winResult.winningSymbols);
-      } else {
-        setWinningSymbols([]);
-      }
-      console.log(newResults);
-      const resultItem = {
-        results: transformedResults,
-        betAmount: bet,
-        winAmount: winResult.totalWin,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      setHistory((prevHistory) => [resultItem, ...prevHistory]); // Utilizando setHistory
-
-      setIsSpinning(false);
-
-      if (isAutoplay && autoSpinCount > 0) {
-        setAutoSpinCount((prevCount) => prevCount - 1);
-        if (autoSpinCount > 1) {
-          setTimeout(executeSpin, 725);
-        } else {
-          setIsAutoplay(false);
-        }
-      }
-    }, 725);
-  };
-
-  const handleSpinClick = () => {
-    executeSpin();
-  };
-
-  const startAutoPlay = () => {
-    if (!isAutoplay && autoSpinCount > 0) {
-      setIsAutoplay(true);
-      executeSpin();
-    }
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
   };
 
   const showSnackbar = (message, type) => {
@@ -118,12 +62,66 @@ const App = () => {
     }, 3000);
   };
 
+  const executeSpin = () => {
+    if (balance < bet || isSpinning) {
+      if (balance < bet) {
+        setErrorMessage("Saldo insuficiente para girar.");
+        showSnackbar("Saldo insuficiente para girar.", "error");
+        setIsAutoplay(false);
+      }
+      return;
+    }
+    setErrorMessage("");
+    setIsSpinning(true);
+    setBalance((prev) => prev - bet);
+    setTimeout(() => {
+      const newResults = slotMachineRef.current.spin();
+      setResults(newResults);
+      const winResult = slotMachineRef.current.checkWin(newResults, bet);
+      setLastWin(winResult.totalWin);
+      setBalance((prev) => prev + winResult.totalWin);
+      if (winResult.totalWin > 0) {
+        showSnackbar(`Você ganhou $${winResult.totalWin}!`, "success");
+        setWinningSymbols(winResult.winningSymbols);
+      } else {
+        setWinningSymbols([]);
+      }
+      const resultItem = {
+        results: transformResults(newResults),
+        betAmount: bet,
+        winAmount: winResult.totalTotalWin,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setHistory((prev) => [resultItem, ...prev]);
+      setIsSpinning(false);
+      if (isAutoplay && autoSpinCount > 0) {
+        setAutoSpinCount((prevCount) => {
+          const newCount = prevCount - 1;
+          if (newCount > 0) {
+            setTimeout(executeSpin, 725);
+          } else {
+            setIsAutoplay(false);
+          }
+          return newCount;
+        });
+      }
+    }, 725);
+  };
+
+  const handleSpinClick = () => {
+    executeSpin();
+  };
+
+  const startAutoPlay = () => {
+    if (!isAutoplay && autoSpinCount > 0 && balance >= bet) {
+      setIsAutoplay(true);
+      executeSpin();
+    }
+  };
+
   return (
-    <div className="body-app">
-      <div className="App-menu">
-        <button className="history-button" onClick={toggleMenu}>
-          🕓
-        </button>
+    <div className="app-container">
+      <div className="app-menu">
         {isMenuOpen && <MenuHistory history={history} />}
         <DebugMenu
           addFunds={(amount) => setBalance((prev) => prev + amount)}
@@ -131,56 +129,60 @@ const App = () => {
           gameState={{ balance, lastWin, isSpinning }}
           setAnimationSpeed={setAnimationSpeed}
           forceWin={() => {
-            const winAmount = 50;
-            setResults(slotMachine.spin(true));
-            setLastWin(winAmount);
-            setBalance((prevBalance) => prevBalance + winAmount);
+            const forcedGrid = slotMachineRef.current.spin(true);
+            setResults(forcedGrid);
+            const fakeWin = 50;
+            setLastWin(fakeWin);
+            setBalance((prev) => prev + fakeWin);
+            setWinningSymbols([
+              [0, 0],
+              [0, 1],
+              [0, 2],
+            ]);
           }}
           forceLose={() => {
-            setResults(slotMachine.spin(false));
+            const forcedGrid = slotMachineRef.current.spin(false);
+            setResults(forcedGrid);
             setLastWin(0);
+            setWinningSymbols([]);
           }}
         />
       </div>
-      <div className="App">
-        <main>
+
+      <div className="layout-grid">
+        <div className="left-panel"></div>
+        <div className="center-panel">
           <SlotDisplay
-            winningSymbols={winningSymbols}
+            symbols={symbols}
             results={results}
             isSpinning={isSpinning}
-            symbols={symbols}
+            winningSymbols={winningSymbols}
             animationSpeed={animationSpeed}
           />
-          <div className="controls">
-            <BetArea
-              bet={bet}
-              setBet={setBet}
-              handleSpinClick={handleSpinClick}
-              handleAutoPlayStart={startAutoPlay}
-              handleBetChange={(e) => setBet(parseInt(e.target.value, 10))}
-              balance={balance}
-              autoSpinCount={autoSpinCount}
-              setAutoSpinCount={setAutoSpinCount}
-              isSpinning={isSpinning}
-            />
-            {snackbarMessage && (
-              <Snackbar message={snackbarMessage} type={snackbarType} />
-            )}
+        </div>
+        <div className="right-panel">
+          <BetArea
+            bet={bet}
+            setBet={setBet}
+            handleSpinClick={handleSpinClick}
+            handleAutoPlayStart={startAutoPlay}
+            balance={balance}
+            autoSpinCount={autoSpinCount}
+            setAutoSpinCount={setAutoSpinCount}
+            isSpinning={isSpinning}
+          />
+          <div className="balance-info">
+            <span className="balance-text">Saldo: </span>
+            <span className="balance-value">${balance}</span>
           </div>
-          <div className="info-bet">
-            <div>
-              Saldo: <span className="balance-display">${balance}</span>
-            </div>
-            {errorMessage && (
-              <div className="error-message">{errorMessage}</div>
-            )}
-            <div>
-              Última Vitória:{" "}
-              <span className="last-win-display">${lastWin}</span>
-            </div>
+          <div className="last-win-info">
+            <span className="last-win-text">Última Vitória: </span>
+            <span className="last-win-value">${lastWin}</span>
           </div>
-        </main>
+        </div>
       </div>
+
+      {snackbarMessage && <Snackbar message={snackbarMessage} type={snackbarType} />}
     </div>
   );
 };

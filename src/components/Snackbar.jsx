@@ -1,9 +1,9 @@
-import React from 'react';
-import './Snackbar.css'; // Importe o arquivo de estilos CSS
+import React from "react";
+import "./Snackbar.css";
 
 const Snackbar = ({ message, type }) => {
   return (
-    <div className={`snackbar ${type}`}>
+    <div className={`snackbar show ${type}`}>
       {message}
     </div>
   );

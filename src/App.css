@@ -1,153 +1,128 @@
-body{
-  padding: auto;
-  margin: auto;
-  height: 100% !important;
-  width: 100% !important;
-  background-image: url(./assets/slot-background.jpg);
-  background-repeat: no-repeat;
-  background-size: cover; /* Ajuste para cobrir o espaço disponível */
+/* src/App.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #121212;
+  background-image: url("./assets/full-background.png");
+  background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+  font-family: "Arial", sans-serif;
+  
 }
 
 .App {
-  height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
-  font-family: "Arial", sans-serif;
-  padding: 11px;
+  padding: 10px;
+  height: 100%;
   box-sizing: border-box;
+  backdrop-filter: blur(4px);
 }
 
-.history-button{
+.history-button {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  border-radius: 16px;
+  top: 20px;
+  right: 20px;
   width: 50px;
   height: 50px;
-  background-color: transparent;
-  border: 2px solid #c82333;
-  font-size: 25px;
-  text-align: center;
-  padding: 4px;
-}
-.App-menu {
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  color: #ffd700;
+  font-size: 24px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  background-color: #282828;
-  color: white;
-  font-family: "Arial", sans-serif;
-}
-/* Adaptação para telas menores */
-@media (max-width: 768px) {
-  .App {
-    padding: 5px;
-  }
-
-  .controls {
-    width: 95%;
-  }
-
-  .bet-input,
-  .spin-button,
-  .balance,
-  .winMessage,
-  .error-message {
-    font-size: 16px;
-    padding: 8px;
-  }
-
-  .spin-button {
-    padding: 10px;
-  }
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
 }
 
-/* Adaptação para telas muito pequenas ou dispositivos móveis */
-@media (max-width: 480px) {
-  .bet-input,
-  .spin-button,
-  .balance,
-  .winMessage,
-  .error-message {
-    font-size: 14px;
-    padding: 5px;
-  }
-
-  .spin-button {
-    padding: 8px 10px;
-  }
-
-  .controls {
-    width: 100%;
-  }
+.history-button:hover {
+  background-color: rgba(255, 215, 0, 0.2);
+  transform: scale(1.1);
 }
 
-.controls {
+.App-menu {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  height: calc(100vh - 100px);
+  width: 100%;
+}
+
+.left-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  justify-content: flex-start;
+  padding-top: 20px;
 }
 
-.bet-input,
-.spin-button,
-.balance,
-.winMessage,
-.error-message {
-  margin: 10px 0;
+.balance-info,
+.last-win-info {
+  color: #fff;
+  margin-top: 15px;
 }
 
-.bet-input {
-  font-size: 1.2rem;
-  padding: 10px;
-  border: 2px solid #ddd;
-  border-radius: 5px;
-  width: auto; /* Garanta que o input não exceda a largura da tela */
-  max-width: 300px; /* Ou qualquer valor máximo que pareça bom */
+.balance-text {
+  color: #fff;
 }
 
-.spin-button {
-  background-color: #30303044;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  width: 72px;
-  height: 72px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.spin-button:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.spin-button:hover {
-  background-color: #c82333;
-}
-
-.balance-display {
-  font-size: 24px;
+.balance-value {
   color: #ffd700;
+  font-weight: bold;
 }
-.info-bet{
-  background-color: rgba(36, 36, 36, 0.671);
-  width: 100%;
-  border-radius: 8px;
-  padding: 8px;
+
+.last-win-text {
+  color: #fff;
 }
-.last-win-display {
+
+.last-win-value {
   color: #4caf50;
-  font-size: 24px;
+  font-weight: bold;
 }
 
 .error-message {
-  color: #ff4d4d;
-  font-size: 28px;
+  color: #f44336;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .left-panel,
+  .right-panel {
+    display: none;
+  }
+  .center-panel {
+    width: 100%;
+    height: 100%;
+  }
 }
